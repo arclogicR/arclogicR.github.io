@@ -208,7 +208,7 @@
   <div class="widget">
     <h3 class="widget-title">Archive</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">October 2022</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -227,25 +227,10 @@
                 
               </p>
               <p class="item-title">
-                <a href="/2022/10/17/ip-md/" class="title">ip.md</a>
+                <a href="/2022/03/17/ip-md/" class="title">IPv4地址</a>
               </p>
               <p class="item-date">
-                <time datetime="2022-10-17T10:16:23.000Z" itemprop="datePublished">2022-10-17</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                
-              </p>
-              <p class="item-title">
-                <a href="/2022/10/17/hello-world/" class="title">Hello World</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2022-10-17T10:14:25.496Z" itemprop="datePublished">2022-10-17</time>
+                <time datetime="2022-03-17T10:16:23.000Z" itemprop="datePublished">2022-03-17</time>
               </p>
             </div>
           </li>
@@ -262,68 +247,123 @@
   
   <main class="main" role="main">
   
-  <div class="content article-list">
+  
+    <div class="content">
+  <article id="post-ip-md" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
-      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
+    <div class="article-header">
+      
+        
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2022/10/17/ip-md/">ip.md</a>
+      <a class="article-title" href="/2022/03/17/ip-md/">IPv4地址</a>
     </h1>
   
 
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
+      
+      <div class="article-meta">
+        <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/2022/10/17/ip-md/" class="article-date">
-	  <time datetime="2022-10-17T10:16:23.000Z" itemprop="datePublished">Oct 17</time>
+	<a href="/2022/03/17/ip-md/" class="article-date">
+	  <time datetime="2022-03-17T10:16:23.000Z" itemprop="datePublished">2022-03-17</time>
 	</a>
 </span>
-    
-    
+        
+        
   <span class="article-tag">
     <i class="icon icon-tags"></i>
 	<a class="article-tag-link-link" href="/tags/network/" rel="tag">network</a>
   </span>
 
 
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/10/17/ip-md/#comments" class="article-comment-link">Comments</a></span>
-    
-  </p>
-</article>
+        
 
-    
-      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/10/17/hello-world/">Hello World</a>
-    </h1>
-  
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/03/17/ip-md/#comments" class="article-comment-link">Comments</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="IPv4地址"><a href="#IPv4地址" class="headerlink" title="IPv4地址"></a>IPv4地址</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>IPv4，全称Internet Protocol version 4，网际互联协议第四版。“the Internet”专指的互联网，这里Internet翻译成“网络之间”、“网际”比较好，而不是“互联网”。为称呼方便，本文IP地址特指“IPv4地址”</p>
+<h2 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h2><p>IP地址是IP协议中重要的一个逻辑概念，它用来去定位、寻找网络的组成部分中的一个（单播）或一些（多播、组播）</p>
+<h3 id="IP地址的组成"><a href="#IP地址的组成" class="headerlink" title="IP地址的组成"></a>IP地址的组成</h3><p>一个IP地址由4组8位的二进制数组成，中间用“.”分隔，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">11000000.10101000.00000001.00000010</span><br></pre></td></tr></table></figure>
 
+<p>二进制位数太多，为了记忆、表达方便，一般采用十进制方式表达，每一段取值区间为[0,255]，上述IP地址可表示为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.2</span><br></pre></td></tr></table></figure>
+
+<h3 id="掩码（Mask）"><a href="#掩码（Mask）" class="headerlink" title="掩码（Mask）"></a>掩码（Mask）</h3><p>一个IP地址共有4×8&#x3D;32位组成，按照位来划分，可人为定义主机号和网络号，比如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.2</span><br></pre></td></tr></table></figure>
+
+<p>我们定义前24位是网络位，后面8位是主机位。如此一来，我们可以很方便地根据前24位IP来定位一个网络，后8位来定位一台主机。其中192.168.1.0表示一个<strong>网络号</strong>，192.168.1.2表示192.168.1.0这个网络中的一台主机，24是192.168.1.0这个网络的<strong>掩码长度</strong>。</p>
+<p>很容易发现192.168.1.0这个网络可用前24位唯一标识，而后8位主机位不能影响我们识别一个网络。那么我们将192.168.1.2化为二进制11000000.10101000.00000001.00000010，将它和由24个1和8个0组成的“IP”地址11111111.11111111.11111111.00000000进行’与’操作，得到的恰好就是它的网络号11000000.10101000.00000001.00000000(192.168.1.0)。把这个特殊的“IP”化为二进制得到255.255.255.0，这就是<strong>子网掩码</strong>。</p>
+<h3 id="IP地址分类、私有地址"><a href="#IP地址分类、私有地址" class="headerlink" title="IP地址分类、私有地址"></a>IP地址分类、私有地址</h3><h4 id="有类划分"><a href="#有类划分" class="headerlink" title="有类划分"></a>有类划分</h4><p>早期IP地址有一套有类划分方式，即根据一定则将IP地址根据子网掩码&#x2F;8，&#x2F;16，&#x2F;24分为不同类。但是这种分类方案显然并不十分合理，浪费IP资源。比如一个20人办公室被分配了&#x2F;24掩码的网段，那么有107个地址被浪费了。</p>
+<h4 id="无类划分"><a href="#无类划分" class="headerlink" title="无类划分"></a>无类划分</h4><p>后来提出了VLSM（可变长子网掩码）的概念，即可任意指定子网掩码。早期的路由协议如ripv1，igrp等都是只支持有类路由的；而CIDR(无类域间路由)，是基于VLSM的。</p>
+<h4 id="私有IP地址"><a href="#私有IP地址" class="headerlink" title="私有IP地址"></a>私有IP地址</h4><p>IP地址是一个逻辑概念，用于定位互联的网络中一台终端。理论上网络中所有IP地址不能有重复，但是由于IP地址耗尽，必须复用一些IP地址。一些不介入互联网的组织，只需内部网络IP地址一致即可。私有IP就是为这种场景设计的，在IP地址的有类划分中，每一类都有一个私有地址段。当然这种场景也可以通过NAT技术实现私有网络与互联网互通。</p>
+<h4 id="IPv4地址有类划分"><a href="#IPv4地址有类划分" class="headerlink" title="IPv4地址有类划分"></a>IPv4地址有类划分</h4><h5 id="A类地址"><a href="#A类地址" class="headerlink" title="A类地址"></a>A类地址</h5><p>IP地址第一段首位固定为0，即</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0xxxxxxx.xxxxxxxx.xxxxxxxx.xxxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>由于第一位固定是0，第一段取值范围为0-127</p>
+<p>A类私有地址为10.0.0.0&#x2F;8<br>A类地址占总地址1&#x2F;2</p>
+<h5 id="B类地址"><a href="#B类地址" class="headerlink" title="B类地址"></a>B类地址</h5><p>首位固定10，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10xxxxxx.xxxxxxxx.xxxxxxxx.xxxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>第一段取值范围是128-191</p>
+<p>私有地址172.16.16.0&#x2F;12 (16-31) 16个B</p>
+<h5 id="C类地址"><a href="#C类地址" class="headerlink" title="C类地址"></a>C类地址</h5><p>首位固定110</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">110xxxxx.xxxxxxxx.xxxxxxxx.xxxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>第一段取值范围192-223</p>
+<p>私有地址192.168.0.0&#x2F;16 256个C</p>
+<p>C类地址占总地址1&#x2F;8</p>
+<h5 id="D类地址（组播，没有网络号和主机号）"><a href="#D类地址（组播，没有网络号和主机号）" class="headerlink" title="D类地址（组播，没有网络号和主机号）"></a>D类地址（组播，没有网络号和主机号）</h5><p>首位固定1110</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1110xxxx.xxxxxxxx.xxxxxxxx.xxxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>首段取值224-239</p>
+<p>私有地址239.0.0.0&#x2F;8</p>
+<p>D类地址占总地址1&#x2F;16</p>
+<h5 id="E类地址为实验地址，为除ABCD类之外的地址"><a href="#E类地址为实验地址，为除ABCD类之外的地址" class="headerlink" title="E类地址为实验地址，为除ABCD类之外的地址"></a>E类地址为实验地址，为除ABCD类之外的地址</h5>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://arclogicr.github.io/2022/03/17/ip-md/" title="IPv4地址" target="_blank" rel="external">https://arclogicr.github.io/2022/03/17/ip-md/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/arclogicr" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/arclogicr" target="_blank"><span class="text-dark">Arclogic</span><small class="ml-1x">Network Engineer</small></a></h3>
+        <div></div>
+      </div>
+    </figure>
   </div>
+</div>
+
+
+    </div>
+  </article>
   
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/2022/10/17/hello-world/" class="article-date">
-	  <time datetime="2022-10-17T10:14:25.496Z" itemprop="datePublished">Oct 17</time>
-	</a>
-</span>
-    
-    
+</div>
 
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/10/17/hello-world/#comments" class="article-comment-link">Comments</a></span>
-    
-  </p>
-</article>
-
-    
-  </div>
+  
 
    
 </main>
