@@ -25,13 +25,15 @@
 <meta property="og:site_name" content="Arclogic&#39;s Blog">
 <meta property="og:description" content="OSPFv2概述OSPF全称开放最短路径优先（Open Shortest Path First）是一种链路状态路由协议。v2版本的OSPF基于IPv4，v3版本的OSPF基于IPv6。在IPv4网络中OSPF应该是被使用最广泛的IGP了。 基本特点 OSPF属于IGP，是链路状态协议，基于IP协议号89 采用分区域的设计，所有区域需要和骨干区域ar0相连 区域内采用SPF(Dijkstra算法)计">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://arclogicr.github.io/.io//03/27/ospf-notes/11.jpg">
+<meta property="og:image" content="https://arclogicr.github.io/2022/03/27/ospf-notes/HELLO.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/03/27/ospf-notes/LSU.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/03/27/ospf-notes/OSPF1.png">
 <meta property="article:published_time" content="2022-03-27T10:12:04.000Z">
-<meta property="article:modified_time" content="2022-10-27T07:40:41.244Z">
+<meta property="article:modified_time" content="2022-10-27T08:10:27.525Z">
 <meta property="article:author" content="Arclogic">
 <meta property="article:tag" content="routing network">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://arclogicr.github.io/.io//03/27/ospf-notes/11.jpg">
+<meta name="twitter:image" content="https://arclogicr.github.io/2022/03/27/ospf-notes/HELLO.png">
   <!-- Canonical links -->
   <link rel="canonical" href="https://arclogicr.github.io/2022/03/27/ospf-notes/index.html">
   
@@ -50,7 +52,7 @@
 <meta name="generator" content="Hexo 6.3.0"></head>
 
 
-<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
   <header class="header" itemscope itemtype="http://schema.org/WPHeader">
   <div class="slimContent">
     <div class="navbar-header">
@@ -348,6 +350,7 @@
 </tr>
 </tbody></table>
 <h2 id="OSPF邻居"><a href="#OSPF邻居" class="headerlink" title="OSPF邻居"></a>OSPF邻居</h2><p>OSPF通过hello报文来建立和维护邻居</p>
+<p><img src="/2022/03/27/ospf-notes/HELLO.png" alt="OSPF HELLO"></p>
 <p>ospf邻居建立过程<br>down：周期性发送hello包；收到不带自己RID的hello包时进入init<br>init：继续正常周期性发送hello包；收到带自己RID的hello包进入2way<br>2way：通过hello包携带的DR&#x2F;BDR信息（如有）选举DR&#x2F;BDR;然后进入exstart<br>exstart: 双法开始单播发送第一个DBD；根据对方的第一个DBD选取主从；然后进入exchange<br>exchange: 开始交换DBD，以master序列号为基准，slave先发DBD，通过序列号隐式确认；发送完毕后进入Loading<br>loading: 双方开始根据DBD的LSA摘要，单播发送LSR请求详细的LSU，同步完成后进入full<br>full: 邻接完成</p>
 <h2 id="OSPF-LSA内容"><a href="#OSPF-LSA内容" class="headerlink" title="OSPF LSA内容"></a>OSPF LSA内容</h2><p>一个LSA可由{Type,LS ID,ADV Router}唯一描述</p>
 <ul>
@@ -359,6 +362,7 @@
 <li>Checksum，校验和</li>
 <li>Do Not Age Flag，不老化标识，虚链路LSA该位为1</li>
 </ul>
+<p><img src="/2022/03/27/ospf-notes/LSU.png" alt="OSPF LSU"></p>
 <h2 id="OSPF-LSA类型"><a href="#OSPF-LSA类型" class="headerlink" title="OSPF LSA类型"></a>OSPF LSA类型</h2><table>
 <thead>
 <tr>
@@ -609,8 +613,7 @@
 </tbody></table>
 <h2 id="OSPF虚链路"><a href="#OSPF虚链路" class="headerlink" title="OSPF虚链路"></a>OSPF虚链路</h2><p>OSPF虚链路用于解决OSPF区域设计上的问题。</p>
 <p>假设R0-R1-R2-R3互联，R0-R1之间，R1-R2之间，R2-R2之间区域分别为0，1，2。R3由于现实原因无法与R0互联，那么可以采用虚链路。在ABR R1和中转区域R2上配置虚链路，相当于R2与区域0相连。</p>
-<img src="/.io//03/27/ospf-notes/11.jpg" class title="OSPF Virturl Link">
-
+<p><img src="/2022/03/27/ospf-notes/OSPF1.png" alt="OSPF Virtual Link"></p>
 <p>虚链路在使用上有一些限制：</p>
 <ul>
 <li>虚链路只在建立邻居的时候发送hello包，邻居建立后不再发送</li>
@@ -621,10 +624,11 @@
 </ul>
 <h2 id="OSPF认证"><a href="#OSPF认证" class="headerlink" title="OSPF认证"></a>OSPF认证</h2><p>OSPF认证是指在发送hello包时添加认证字段达到认证邻居的效果，可以保护自己的路由传给通过认证的邻居。</p>
 <p>OSPF认证分接口认证和区域认证，区域认证本质就是所有属于该区域的接口都参与认证。同时配置接口认证和区域认证，以接口认证配置优先。</p>
-<h3 id="接口认证"><a href="#接口认证" class="headerlink" title="接口认证"></a>接口认证</h3><h4 id="接口明文认证"><a href="#接口明文认证" class="headerlink" title="接口明文认证"></a>接口明文认证</h4><p>int s1&#x2F;1<br>ip ospf authentication<br>ip ospf authentication-key cisco</p>
-<h4 id="接口md5认证"><a href="#接口md5认证" class="headerlink" title="接口md5认证"></a>接口md5认证</h4><p>int s1&#x2F;1<br>ip ospf authentication message-digest<br>ip ospf message-digest-key <strong>1</strong> md5 <strong>cisco</strong><br>其中1是key-id，cisco是md5原文</p>
-<h3 id="区域认证"><a href="#区域认证" class="headerlink" title="区域认证"></a>区域认证</h3><h4 id="区域明文"><a href="#区域明文" class="headerlink" title="区域明文"></a>区域明文</h4><p>router ospf 1<br>ar 0 authentication</p>
-<h4 id="区域md5"><a href="#区域md5" class="headerlink" title="区域md5"></a>区域md5</h4><p>router ospf 1<br>ar 0 authentication message-digest</p>
+<h3 id="接口认证"><a href="#接口认证" class="headerlink" title="接口认证"></a>接口认证</h3><h4 id="接口明文认证"><a href="#接口明文认证" class="headerlink" title="接口明文认证"></a>接口明文认证</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int s1/1</span><br><span class="line">ip ospf authentication</span><br><span class="line">ip ospf authentication-key cisco</span><br></pre></td></tr></table></figure>
+<h4 id="接口md5认证"><a href="#接口md5认证" class="headerlink" title="接口md5认证"></a>接口md5认证</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int s1/1</span><br><span class="line">ip ospf authentication message-digest</span><br><span class="line">ip ospf message-digest-key **1** md5 **cisco**</span><br></pre></td></tr></table></figure>
+<p>其中1是key-id，cisco是md5原文</p>
+<h3 id="区域认证"><a href="#区域认证" class="headerlink" title="区域认证"></a>区域认证</h3><h4 id="区域明文"><a href="#区域明文" class="headerlink" title="区域明文"></a>区域明文</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">router ospf 1</span><br><span class="line">ar 0 authentication</span><br></pre></td></tr></table></figure>
+<h4 id="区域md5"><a href="#区域md5" class="headerlink" title="区域md5"></a>区域md5</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">router ospf 1</span><br><span class="line">ar 0 authentication message-digest</span><br></pre></td></tr></table></figure>
 <h3 id="多-key-md5-认证规则："><a href="#多-key-md5-认证规则：" class="headerlink" title="多 key md5 认证规则："></a>多 key md5 认证规则：</h3><p>当配置了最新的 key，将最新 key 与旧 key 都发送到对端：</p>
 <ul>
 <li>若最新的 key，到对端没有找到对应的 key-id，则两端采用旧 key 完成认证。</li>
