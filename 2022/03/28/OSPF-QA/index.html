@@ -18,17 +18,17 @@
   
   
   <title>OSPF经典问题汇总 | Arclogic的博客</title>
-  <meta name="description" content="OSPF经典问题汇总OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外">
+  <meta name="description" content="OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外路由重分布能力位）；">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OSPF经典问题汇总">
 <meta property="og:url" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/index.html">
 <meta property="og:site_name" content="Arclogic&#39;s Blog">
-<meta property="og:description" content="OSPF经典问题汇总OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外">
+<meta property="og:description" content="OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外路由重分布能力位）；">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID1.png">
 <meta property="og:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID2.png">
 <meta property="article:published_time" content="2022-03-28T08:13:52.000Z">
-<meta property="article:modified_time" content="2022-10-28T08:21:53.811Z">
+<meta property="article:modified_time" content="2022-10-28T09:48:55.079Z">
 <meta property="article:author" content="Arclogic">
 <meta property="article:tag" content="network">
 <meta property="article:tag" content="routing">
@@ -236,7 +236,7 @@
   <div class="widget">
     <h3 class="widget-title">标签</h3>
     <div class="widget-body">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/" rel="tag">network</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ospf/" rel="tag">ospf</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/routing/" rel="tag">routing</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/" rel="tag">tcp&#x2F;ip</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/" rel="tag">network</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ospf/" rel="tag">ospf</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/routing/" rel="tag">routing</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/" rel="tag">tcp&#x2F;ip</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -257,6 +257,15 @@
 
   
   
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E9%87%87%E7%94%A8%E5%88%86%E5%8C%BA%E5%9F%9F%E8%AE%BE%E8%AE%A1%E6%9C%89%E4%BB%80%E4%B9%88%E5%A5%BD%E5%A4%84%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">OSPF采用分区域设计有什么好处？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8DOSPF%E9%82%BB%E6%8E%A5%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">影响OSPF邻接的原因有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9COSPF%E5%8F%8C%E6%96%B9%E8%B7%AF%E7%94%B1%E5%99%A8MTU%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5"><span class="toc-number">3.</span> <span class="toc-text">如果OSPF双方路由器MTU不一致，会发生什么情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E4%BD%95%E6%97%B6%E7%94%A8%E7%BB%84%E6%92%AD%EF%BC%8C%E4%BD%95%E6%97%B6%E7%94%A8%E5%8D%95%E6%92%AD%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">OSPF何时用组播，何时用单播？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E9%82%BB%E5%B1%85%E8%A1%A8%E5%8F%91%E7%8E%B02-way%E6%98%AF%E5%90%A6%E6%AD%A3%E5%B8%B8"><span class="toc-number">5.</span> <span class="toc-text">OSPF邻居表发现2-way是否正常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E6%9D%A1LSA%E7%9A%84%E6%96%B0%E6%97%A7"><span class="toc-number">6.</span> <span class="toc-text">如何判断一条LSA的新旧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E4%B8%8D%E7%9B%B8%E9%82%BB%E7%9A%84%E4%B8%A4%E5%8F%B0OSPF%E8%B7%AF%E7%94%B1%E5%99%A8RID%E7%9B%B8%E5%90%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">如果不相邻的两台OSPF路由器RID相同会发生什么</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
 <main class="main" role="main">
   <div class="content">
   <article id="post-OSPF-QA" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
@@ -299,7 +308,7 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h1 id="OSPF经典问题汇总"><a href="#OSPF经典问题汇总" class="headerlink" title="OSPF经典问题汇总"></a>OSPF经典问题汇总</h1><h2 id="OSPF采用分区域设计有什么好处？"><a href="#OSPF采用分区域设计有什么好处？" class="headerlink" title="OSPF采用分区域设计有什么好处？"></a>OSPF采用分区域设计有什么好处？</h2><ul>
+        <h2 id="OSPF采用分区域设计有什么好处？"><a href="#OSPF采用分区域设计有什么好处？" class="headerlink" title="OSPF采用分区域设计有什么好处？"></a>OSPF采用分区域设计有什么好处？</h2><ul>
 <li>可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力</li>
 <li>减少1，2类LSA泛洪</li>
 <li>减少路由收敛的范围，一个区域的问题不会影响其它区域</li>
@@ -365,7 +374,7 @@
       </div>
       <div class="media-body">
         <h3 class="media-heading"><a href="https://github.com/arclogicr" target="_blank"><span class="text-dark">Arclogic</span><small class="ml-1x">Network Engineer</small></a></h3>
-        <div></div>
+        <div>大勇若怯，大智若愚</div>
       </div>
     </figure>
   </div>
@@ -396,6 +405,14 @@
       <a href="/2022/03/27/ospf-notes/" title="OSPF学习笔记"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
     
   </ul>
   
