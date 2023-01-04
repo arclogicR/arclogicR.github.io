@@ -17,26 +17,22 @@
   <meta http-equiv="window-target" content="_top" />
   
   
-  <title>OSPF经典问题汇总 | Arclogic的博客</title>
-  <meta name="description" content="OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外路由重分布能力位）；">
+  <title>kvm如何禁止虚拟机之间通信 | Arclogic的博客</title>
+  <meta name="description" content="一般来说，使用KVM创建虚拟机，都会有虚拟机之间通信的需求，KVM的四种网络模式也都默认允许同一网段的虚拟机之间互通。如果有特殊需求，需要禁止虚拟机之间的通信，该如何配置？ KVM四种网络模式 首先隔离模式，相当于Vmware&#x2F;Vbox 仅主机模式，VM之间可通信，VM与宿主可通信，VM与外部不可通信  NAT模式，VM之间可通信，VM与宿主可通信，VM可访问外部，外部访问VM需要做端口">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OSPF经典问题汇总">
-<meta property="og:url" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/index.html">
+<meta property="og:title" content="kvm如何禁止虚拟机之间通信">
+<meta property="og:url" content="https://arclogicr.github.io/2023/01/04/kvmq1/index.html">
 <meta property="og:site_name" content="Arclogic&#39;s Blog">
-<meta property="og:description" content="OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外路由重分布能力位）；">
+<meta property="og:description" content="一般来说，使用KVM创建虚拟机，都会有虚拟机之间通信的需求，KVM的四种网络模式也都默认允许同一网段的虚拟机之间互通。如果有特殊需求，需要禁止虚拟机之间的通信，该如何配置？ KVM四种网络模式 首先隔离模式，相当于Vmware&#x2F;Vbox 仅主机模式，VM之间可通信，VM与宿主可通信，VM与外部不可通信  NAT模式，VM之间可通信，VM与宿主可通信，VM可访问外部，外部访问VM需要做端口">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID1.png">
-<meta property="og:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID2.png">
-<meta property="article:published_time" content="2022-03-28T08:13:52.000Z">
-<meta property="article:modified_time" content="2022-10-28T09:48:55.079Z">
+<meta property="article:published_time" content="2023-01-04T07:37:05.000Z">
+<meta property="article:modified_time" content="2023-01-04T07:42:35.568Z">
 <meta property="article:author" content="Arclogic">
 <meta property="article:tag" content="network">
-<meta property="article:tag" content="routing">
-<meta property="article:tag" content="ospf">
+<meta property="article:tag" content="kvm">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID1.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://arclogicr.github.io/2022/03/28/OSPF-QA/index.html">
+  <link rel="canonical" href="https://arclogicr.github.io/2023/01/04/kvmq1/index.html">
   
     <link rel="alternate" href="/atom.xml" title="Arclogic&#39;s Blog" type="application/atom+xml">
   
@@ -276,21 +272,21 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E9%87%87%E7%94%A8%E5%88%86%E5%8C%BA%E5%9F%9F%E8%AE%BE%E8%AE%A1%E6%9C%89%E4%BB%80%E4%B9%88%E5%A5%BD%E5%A4%84%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">OSPF采用分区域设计有什么好处？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8DOSPF%E9%82%BB%E6%8E%A5%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">影响OSPF邻接的原因有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9COSPF%E5%8F%8C%E6%96%B9%E8%B7%AF%E7%94%B1%E5%99%A8MTU%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5"><span class="toc-number">3.</span> <span class="toc-text">如果OSPF双方路由器MTU不一致，会发生什么情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E4%BD%95%E6%97%B6%E7%94%A8%E7%BB%84%E6%92%AD%EF%BC%8C%E4%BD%95%E6%97%B6%E7%94%A8%E5%8D%95%E6%92%AD%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">OSPF何时用组播，何时用单播？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E9%82%BB%E5%B1%85%E8%A1%A8%E5%8F%91%E7%8E%B02-way%E6%98%AF%E5%90%A6%E6%AD%A3%E5%B8%B8"><span class="toc-number">5.</span> <span class="toc-text">OSPF邻居表发现2-way是否正常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E6%9D%A1LSA%E7%9A%84%E6%96%B0%E6%97%A7"><span class="toc-number">6.</span> <span class="toc-text">如何判断一条LSA的新旧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E4%B8%8D%E7%9B%B8%E9%82%BB%E7%9A%84%E4%B8%A4%E5%8F%B0OSPF%E8%B7%AF%E7%94%B1%E5%99%A8RID%E7%9B%B8%E5%90%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">如果不相邻的两台OSPF路由器RID相同会发生什么</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KVM%E5%9B%9B%E7%A7%8D%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">KVM四种网络模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iptables%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">iptables解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nwfilter%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">nwfilter解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E7%AD%96%E7%95%A5"><span class="toc-number">3.1.</span> <span class="toc-text">定义策略</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%95%88%E7%AD%96%E7%95%A5"><span class="toc-number">4.</span> <span class="toc-text">生效策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5"><span class="toc-number">5.</span> <span class="toc-text">应用策略</span></a></li></ol>
     </nav>
   </div>
 </aside>
 
 <main class="main" role="main">
   <div class="content">
-  <article id="post-OSPF-QA" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-kvmq1" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      OSPF经典问题汇总
+      kvm如何禁止虚拟机之间通信
     </h1>
   
 
@@ -298,68 +294,71 @@
       <div class="article-meta">
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/2022/03/28/OSPF-QA/" class="article-date">
-	  <time datetime="2022-03-28T08:13:52.000Z" itemprop="datePublished">2022-03-28</time>
+	<a href="/2023/01/04/kvmq1/" class="article-date">
+	  <time datetime="2023-01-04T07:37:05.000Z" itemprop="datePublished">2023-01-04</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a>
+    <a class="article-category-link" href="/categories/%E6%97%A5%E7%A7%AF%E6%9C%88%E7%B4%AF/">日积月累</a>
   </span>
 
         
   <span class="article-tag">
     <i class="icon icon-tags"></i>
-	<a class="article-tag-link-link" href="/tags/network/" rel="tag">network</a>, <a class="article-tag-link-link" href="/tags/ospf/" rel="tag">ospf</a>, <a class="article-tag-link-link" href="/tags/routing/" rel="tag">routing</a>
+	<a class="article-tag-link-link" href="/tags/kvm/" rel="tag">kvm</a>, <a class="article-tag-link-link" href="/tags/network/" rel="tag">network</a>
   </span>
 
 
         
 
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/03/28/OSPF-QA/#comments" class="article-comment-link">评论</a></span>
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2023/01/04/kvmq1/#comments" class="article-comment-link">评论</a></span>
         
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h2 id="OSPF采用分区域设计有什么好处？"><a href="#OSPF采用分区域设计有什么好处？" class="headerlink" title="OSPF采用分区域设计有什么好处？"></a>OSPF采用分区域设计有什么好处？</h2><ul>
-<li>可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力</li>
-<li>减少1，2类LSA泛洪</li>
-<li>减少路由收敛的范围，一个区域的问题不会影响其它区域</li>
-</ul>
-<h2 id="影响OSPF邻接的原因有哪些？"><a href="#影响OSPF邻接的原因有哪些？" class="headerlink" title="影响OSPF邻接的原因有哪些？"></a>影响OSPF邻接的原因有哪些？</h2><p>1、ROUTER ID不能相同；<br>2、HELLO时间必须一致；<br>3、DEAD时间必须一致；<br>4、区域ID必须相同；<br>5、认证必须相同；<br>6、STUB标志位必须相同（hello包中域外路由重分布能力位）；<br>7、MTU不匹配无法形成邻接关系<br>8、OSPF版本号不同（目前版本为2）；<br>9、当OSPF网络类型是MA时，要求掩码一定一致（两个邻居）。因为会出现DR和LSA-2，无法描述网段</p>
-<h2 id="如果OSPF双方路由器MTU不一致，会发生什么情况"><a href="#如果OSPF双方路由器MTU不一致，会发生什么情况" class="headerlink" title="如果OSPF双方路由器MTU不一致，会发生什么情况"></a>如果OSPF双方路由器MTU不一致，会发生什么情况</h2><p><strong>无法建立邻接关系</strong></p>
-<p>假设<strong>R1 MTU &lt; R2 MTU</strong></p>
-<p>首先，双方都可以进入exstart状态。然后双方开始单播发送第一个DBD，<br>此时<br>若R2的RID&gt;R1的RID</p>
-<p>对于R1：收到R2第一个DBD发现MTU比自己大，无法接受；所以维持发送第一个DBD的状态，即维持exstart状态</p>
-<p>对于R2: 正常收到R1的第一个DBD然后可以计算出自己是master，然后等待对方发送LSA摘要；但是发现R1只会发第一个DBD不发LSA摘要，（猜测：可能以为通讯有问题），于是维持发送第一个DBD，即维持exstart状态</p>
-<p>若R2的RID&lt;RI的RID</p>
-<p>对于R1：收到R2第一个DBD发现MTU比自己大，无法接受；所以维持发送第一个DBD的状态，即维持exstart状态</p>
-<p>对于R2: 正常收到R1的第一个DBD然后可以计算出对方是master而自己是slave，然后会发送LSA摘要，即进入exchange状态，但对方没有回复LSA摘要，所以会支持卡在exchange这个状态</p>
-<p>总结：<br>当双方mtu不一致时<br><strong>若DBD从的mtu小，则双方都卡在exstart</strong><br><strong>若DBD从的mtu大，则mtu大的进入exchange，mtu小的维持exstart</strong></p>
-<p><strong>总之，mtu小的一定卡在exstart，mtu大的有可能进入exchange（取决于是否是DBD从角色）</strong></p>
-<h2 id="OSPF何时用组播，何时用单播？"><a href="#OSPF何时用组播，何时用单播？" class="headerlink" title="OSPF何时用组播，何时用单播？"></a>OSPF何时用组播，何时用单播？</h2><ul>
-<li>HELLO包，不手动指定邻居的话都是发送到组播224.0.0.5</li>
-<li>DBD，只是两个路由器之间建邻居互传DB摘要，采用单播</li>
-<li>LSR，请求LSA，直接向DR请求，单播</li>
-<li>LSU<ul>
-<li>回复LSR时是单播</li>
-<li>触发更新时是组播<ul>
-<li>DR-Other 采用组播224.0.0.6告知DR&#x2F;BDR，由DR发送224.0.0.5告知其它所有路由器</li>
-<li>p2p类型网络都是发送到组播224.0.0.5</li>
-</ul>
+        <p>一般来说，使用KVM创建虚拟机，都会有虚拟机之间通信的需求，KVM的四种网络模式也都默认允许同一网段的虚拟机之间互通。如果有特殊需求，需要禁止虚拟机之间的通信，该如何配置？</p>
+<h3 id="KVM四种网络模式"><a href="#KVM四种网络模式" class="headerlink" title="KVM四种网络模式"></a>KVM四种网络模式</h3><ul>
+<li><p>首先隔离模式，相当于Vmware&#x2F;Vbox 仅主机模式，VM之间可通信，VM与宿主可通信，VM与外部不可通信</p>
+</li>
+<li><p>NAT模式，VM之间可通信，VM与宿主可通信，VM可访问外部，外部访问VM需要做端口转发</p>
+</li>
+<li><p>桥接模式，VM之间可通信，VM与宿主可通信，VM可访问外部，外部可访问VM。一般桥接模式下VM网段与宿主机同段。</p>
+</li>
+<li><p>路由模式，VM之间可通信，VM与宿主可通信，VM可访问外部，外部可访问VM。路由模式下VM网段可以与宿主机不同端，外部需要配置路由才能访问VM</p>
 </li>
 </ul>
-</li>
-<li>LSAck，组播224.0.05</li>
-</ul>
-<h2 id="OSPF邻居表发现2-way是否正常"><a href="#OSPF邻居表发现2-way是否正常" class="headerlink" title="OSPF邻居表发现2-way是否正常"></a>OSPF邻居表发现2-way是否正常</h2><p><strong>MA网络中正常</strong><br>在MA网络中，DR和BDR分别与DROther建立full邻接关系，DROther之间只是2-way关系</p>
-<h2 id="如何判断一条LSA的新旧"><a href="#如何判断一条LSA的新旧" class="headerlink" title="如何判断一条LSA的新旧"></a>如何判断一条LSA的新旧</h2><p>当一台路由器收到相同的LSA的多个实例时，将通过以下算法决定将哪一条放入数据库：</p>
-<p>1、比较LSA实例的序列号，大的优先<br>2、序列号相同，再比校验和，大的优先<br>3、校验和也相同，再比老化时间，如果有一条LSA拥有大小为最大生存时间（3600S）的老化时间，则最优<br>4、如果LSA的老化时间之间的差别多于15分钟，则老化时间小的优先<br>5、如果以上条件都比不出来，则认为这些LSA相同</p>
-<h2 id="如果不相邻的两台OSPF路由器RID相同会发生什么"><a href="#如果不相邻的两台OSPF路由器RID相同会发生什么" class="headerlink" title="如果不相邻的两台OSPF路由器RID相同会发生什么"></a>如果不相邻的两台OSPF路由器RID相同会发生什么</h2><p><strong>若这些路由器在同一区域</strong><br><img src="/2022/03/28/OSPF-QA/RID1.png" alt="OSPF RID1"><br>R1-R2-R3连接，且都属于同一区域<br>假设R2-R3先正常建立邻居后，R1配置R3的RID接入。此时R1与R2可以建立full邻接关系，R1会收到R2发来的较新的1类LSA，这里的1类LSA应该有两条<br>第一条ADV Router是R3<br>第二条ADV Router是R1</p>
-<p>这里R1会接受R2独有的路由（即ADV Router为R2且R3 没通告的路由，如lo 0的路由），收到R3路由发现和自己RID一样，会报RID dup的错，同时也会发送自己的最新的LSA。R3同理。<br><strong>最后结果就是R1,R3可以学到R2的loopback 路由但R1,R3互相的路由不稳定会翻动</strong></p>
-<p><strong>若这些路由器在不通区域</strong><br><img src="/2022/03/28/OSPF-QA/RID2.png" alt="OSPF RID2"><br>R1-R2-R3连接，R1-R2属于区域1，R2-R3属于区域0<br>假设R2-R3先正常建立邻居后，R1配置R3的RID接入。此时R1与R2可以建立full邻接关系。这里R2是ABR，R2会吧R3通告的1类LSA转为3类，在发给区域1的时候ADV Router字段会变为自己（即R2的RID），但不会重新处理5类LSA。所以对区域1的内部路由器R1来说，收到的R3路由会当做普通的三类LSA处理，并不知道这些OIA路由来自哪里；同理，R3也能学到R1的域内路由。<br><strong>最后结果就是R1,R3可以互相学到域内路由</strong></p>
+<h3 id="iptables解决方案"><a href="#iptables解决方案" class="headerlink" title="iptables解决方案"></a>iptables解决方案</h3><p>搜了资料，有人说可以用iptables实现，原理如下</p>
+<p>NAT模式下，宿主机有一块网卡virbr0。针对virbr0，在iptables中FORWARD链限制同网段互访</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-A FORWARD -i virbr0 -s 192.168.1.0/24 -d 192.168.1.0/24 -j DROP</span><br></pre></td></tr></table></figure>
+
+<p>我尝试了下，不知为何不生效，也许因为虚拟机互访实际流量并不经过virbr0？尝试将FORWARD链改为INPUT链也是不生效。后来放弃iptables，改用nwfilter。</p>
+<h3 id="nwfilter解决方案"><a href="#nwfilter解决方案" class="headerlink" title="nwfilter解决方案"></a>nwfilter解决方案</h3><p>nwfilter是kvm自带的网络流量工具，可以精确控制每一块vm网卡。上面iptables的方案是在宿主机上做策略，而nwfilter是对每一个vm做策略，nwfilter的策略可以应用在多个vm上。</p>
+<p>总的来说nwfilter的用法就是，定义nwfilter策略，生效策略，应用策略。下面以NAT模式下禁止虚拟机之间互通为例介绍nwfilter解决方案</p>
+<h4 id="定义策略"><a href="#定义策略" class="headerlink" title="定义策略"></a>定义策略</h4><p>在&#x2F;etc&#x2F;libvirt&#x2F;nwfilter下建立xml文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/libvir/nwfilter/deny-inter.xml</span><br></pre></td></tr></table></figure>
+
+<p>写入规则</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;filter name=&#x27;deny-inter&#x27; chain=&#x27;ipv4&#x27; priority=&#x27;-700&#x27;&gt;</span><br><span class="line">  &lt;uuid&gt;ab4b9613-3442-41af-a4b3-0a3bdaae7111&lt;/uuid&gt;</span><br><span class="line">  &lt;rule action=&#x27;accept&#x27; direction=&#x27;in&#x27; priority=&#x27;200&#x27;&gt;</span><br><span class="line">    &lt;ip srcipaddr=&#x27;192.168.122.1&#x27; srcipmask=&#x27;32&#x27;/&gt;</span><br><span class="line">  &lt;/rule&gt;</span><br><span class="line">  &lt;rule action=&#x27;drop&#x27; direction=&#x27;in&#x27; priority=&#x27;201&#x27;&gt;</span><br><span class="line">    &lt;ip srcipaddr=&#x27;192.168.122.0&#x27; srcipmask=&#x27;24&#x27;/&gt;</span><br><span class="line">  &lt;/rule&gt;</span><br><span class="line">&lt;/filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中，</p>
+<p>这里只采用了ipv4的链，只需要对ip包进行过滤</p>
+<p>注意uuid不要与现有的相同</p>
+<p>每条规则后的优先级越小越优，如果优先级相同优先匹配前面的规则</p>
+<p>这里的规则将来是应用在虚拟机上，所以in&#x2F;out是针对虚拟机网卡的</p>
+<p>第一条规则是为了保证dhcp正常工作，这里用in方向策略会方便一点，因为dhcp discover包发出去是广播，dhcp offer包回来是单播，in方向只需要允许宿主机的单播包就可以了</p>
+<p>更多nwfilter的详细用法可以参考<a target="_blank" rel="noopener" href="https://wiki.libvirt.org/page/VirtualNetworking">VirtualNetworking - Libvirt Wiki</a></p>
+<h3 id="生效策略"><a href="#生效策略" class="headerlink" title="生效策略"></a>生效策略</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">virsh nwfilter-define deny-inter.xml #生效策略</span><br><span class="line">virsh nwfilter-list #查看是否生效</span><br></pre></td></tr></table></figure>
+
+<h3 id="应用策略"><a href="#应用策略" class="headerlink" title="应用策略"></a>应用策略</h3><p>编辑虚拟机配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virsh edit vm01</span><br></pre></td></tr></table></figure>
+
+<p>找到<interface type>添加定义过的策略</interface></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;interface type=&#x27;network&#x27;&gt;</span><br><span class="line">  &lt;mac address=&#x27;52:54:00:ec:f5:4e&#x27;/&gt;</span><br><span class="line">  &lt;source network=&#x27;default&#x27;/&gt;</span><br><span class="line">  &lt;model type=&#x27;e1000&#x27;/&gt;</span><br><span class="line">  &lt;filterref filter=&#x27;deny-inter&#x27;/&gt; #ADD POLICY</span><br><span class="line">  &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x03&#x27; function=&#x27;0x0&#x27;/&gt;</span><br></pre></td></tr></table></figure>
+
+<p>最后重启虚拟机，VM之间无法ping通，VM与宿主机可通，VM ping 外面可通。</p>
 
       
     </div>
@@ -369,7 +368,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://arclogicr.github.io/2022/03/28/OSPF-QA/" title="OSPF经典问题汇总" target="_blank" rel="external">https://arclogicr.github.io/2022/03/28/OSPF-QA/</a>
+      <a href="https://arclogicr.github.io/2023/01/04/kvmq1/" title="kvm如何禁止虚拟机之间通信" target="_blank" rel="external">https://arclogicr.github.io/2023/01/04/kvmq1/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -415,13 +414,9 @@
   
   <ul class="pager pull-left">
     
-    <li class="prev">
-      <a href="/2023/01/04/kvmq1/" title="kvm如何禁止虚拟机之间通信"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
     
     <li class="next">
-      <a href="/2022/03/27/ospf-notes/" title="OSPF学习笔记"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="/2022/03/28/OSPF-QA/" title="OSPF经典问题汇总"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
