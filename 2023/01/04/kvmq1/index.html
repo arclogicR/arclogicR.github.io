@@ -26,7 +26,7 @@
 <meta property="og:description" content="一般来说，使用KVM创建虚拟机，都会有虚拟机之间通信的需求，KVM的四种网络模式也都默认允许同一网段的虚拟机之间互通。如果有特殊需求，需要禁止虚拟机之间的通信，该如何配置？ KVM四种网络模式 首先隔离模式，相当于Vmware&#x2F;Vbox 仅主机模式，VM之间可通信，VM与宿主可通信，VM与外部不可通信  NAT模式，VM之间可通信，VM与宿主可通信，VM可访问外部，外部访问VM需要做端口">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-04T07:37:05.000Z">
-<meta property="article:modified_time" content="2023-01-04T07:42:35.568Z">
+<meta property="article:modified_time" content="2023-01-05T10:14:48.629Z">
 <meta property="article:author" content="Arclogic">
 <meta property="article:tag" content="network">
 <meta property="article:tag" content="kvm">
@@ -272,7 +272,7 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KVM%E5%9B%9B%E7%A7%8D%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">KVM四种网络模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iptables%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">iptables解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nwfilter%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">nwfilter解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E7%AD%96%E7%95%A5"><span class="toc-number">3.1.</span> <span class="toc-text">定义策略</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%95%88%E7%AD%96%E7%95%A5"><span class="toc-number">4.</span> <span class="toc-text">生效策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5"><span class="toc-number">5.</span> <span class="toc-text">应用策略</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KVM%E5%9B%9B%E7%A7%8D%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">KVM四种网络模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iptables%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">iptables解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nwfilter%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">nwfilter解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E7%AD%96%E7%95%A5"><span class="toc-number">3.1.</span> <span class="toc-text">定义策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E6%95%88%E7%AD%96%E7%95%A5"><span class="toc-number">3.2.</span> <span class="toc-text">生效策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5"><span class="toc-number">3.3.</span> <span class="toc-text">应用策略</span></a></li></ol></li></ol>
     </nav>
   </div>
 </aside>
@@ -350,9 +350,9 @@
 <p>这里的规则将来是应用在虚拟机上，所以in&#x2F;out是针对虚拟机网卡的</p>
 <p>第一条规则是为了保证dhcp正常工作，这里用in方向策略会方便一点，因为dhcp discover包发出去是广播，dhcp offer包回来是单播，in方向只需要允许宿主机的单播包就可以了</p>
 <p>更多nwfilter的详细用法可以参考<a target="_blank" rel="noopener" href="https://wiki.libvirt.org/page/VirtualNetworking">VirtualNetworking - Libvirt Wiki</a></p>
-<h3 id="生效策略"><a href="#生效策略" class="headerlink" title="生效策略"></a>生效策略</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">virsh nwfilter-define deny-inter.xml #生效策略</span><br><span class="line">virsh nwfilter-list #查看是否生效</span><br></pre></td></tr></table></figure>
+<h4 id="生效策略"><a href="#生效策略" class="headerlink" title="生效策略"></a>生效策略</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">virsh nwfilter-define deny-inter.xml #生效策略</span><br><span class="line">virsh nwfilter-list #查看是否生效</span><br></pre></td></tr></table></figure>
 
-<h3 id="应用策略"><a href="#应用策略" class="headerlink" title="应用策略"></a>应用策略</h3><p>编辑虚拟机配置文件</p>
+<h4 id="应用策略"><a href="#应用策略" class="headerlink" title="应用策略"></a>应用策略</h4><p>编辑虚拟机配置文件</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virsh edit vm01</span><br></pre></td></tr></table></figure>
 
 <p>找到<interface type>添加定义过的策略</interface></p>
