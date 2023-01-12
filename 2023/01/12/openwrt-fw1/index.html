@@ -26,7 +26,7 @@
 <meta property="og:description" content="Firewall and network interfacesThe goal of a router is to forward packet streams from incoming network interfaces to outgoing network interfaces. Firewall rules add another layer of granularity to wha">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-12T10:34:55.000Z">
-<meta property="article:modified_time" content="2023-01-12T10:38:07.832Z">
+<meta property="article:modified_time" content="2023-01-12T11:02:19.584Z">
 <meta property="article:author" content="Arclogic">
 <meta property="article:tag" content="network">
 <meta property="article:tag" content="firewall">
@@ -289,7 +289,7 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Firewall-and-network-interfaces"><span class="toc-number">1.</span> <span class="toc-text">Firewall and network interfaces</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LAN-bridge"><span class="toc-number">2.</span> <span class="toc-text">LAN bridge</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%80%E5%9F%9F%E7%BD%91%E7%BD%91%E6%A1%A5"><span class="toc-number">3.</span> <span class="toc-text">局域网网桥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Firewall-Zones"><span class="toc-number">4.</span> <span class="toc-text">Firewall Zones</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E5%8C%BA%E5%9F%9F"><span class="toc-number">5.</span> <span class="toc-text">防火墙区域</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Firewall-and-network-interfaces"><span class="toc-number">1.</span> <span class="toc-text">Firewall and network interfaces</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E5%92%8C%E7%BD%91%E7%BB%9C%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.</span> <span class="toc-text">防火墙和网络接口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LAN-bridge"><span class="toc-number">3.</span> <span class="toc-text">LAN bridge</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%80%E5%9F%9F%E7%BD%91%E7%BD%91%E6%A1%A5"><span class="toc-number">4.</span> <span class="toc-text">局域网网桥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Firewall-Zones"><span class="toc-number">5.</span> <span class="toc-text">Firewall Zones</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E5%8C%BA%E5%9F%9F"><span class="toc-number">6.</span> <span class="toc-text">防火墙区域</span></a></li></ol>
     </nav>
   </div>
 </aside>
@@ -338,8 +338,7 @@
       
         <h4 id="Firewall-and-network-interfaces"><a href="#Firewall-and-network-interfaces" class="headerlink" title="Firewall and network interfaces"></a>Firewall and network interfaces</h4><p>The goal of a router is to forward packet streams from incoming network interfaces to outgoing network interfaces. Firewall rules add another layer of granularity to what is allowed to be forwarded across interfaces - and additionally which packets are allowed to be inputted to, and outputted from, the router itself. This section discusses the relationships between the firewall code and the network interfaces.</p>
 <p>At the heart of all routers is a hardware switch with a number of interface ports. When a packet enters one of the switch ports, the hardware switch matches a fixed field in the packet and forwards the packet to an output port which transmits it.</p>
-<p>####防火墙和网络接口</p>
-<p>路由器的目标是从入向网络接口到出向网络接口转发分组流。防火墙规则增加了另一个层面的粒度；即，什么分组可以跨接口转发，还有哪些分组可以被允许进入和离开该路由器。本章讨论防火墙代码和网络接口之间的关系。</p>
+<h4 id="防火墙和网络接口"><a href="#防火墙和网络接口" class="headerlink" title="防火墙和网络接口"></a>防火墙和网络接口</h4><p>路由器的目标是从入向网络接口到出向网络接口转发分组流。防火墙规则增加了另一个层面的粒度；即，什么分组可以跨接口转发，还有哪些分组可以被允许进入和离开该路由器。本章讨论防火墙代码和网络接口之间的关系。</p>
 <p>所有路由器的核心就是一个带有一些端口硬件交换机。当一个分组进入其中一个交换端口，硬件交换机匹配该分组内固定的字段并转发到一个可传输它的出接口。</p>
 <p>The switch generally uses the layer-2 destination MAC address in the packet to switch on. Each port has a cache of MAC addresses for stations reachable by (attached to) that port. Entries in the MAC cache gradually out, so must be re-discovered if used again. Layer-2 frames with a known destination MAC are switched to the desired LAN port. If the MAC is not present anywhere in the switch cache, a broadcast packet (e.g. ARP) is flooded to all LAN ports to discover which has access to the destination MAC.</p>
 <p>交换机通常使用分组中的二层目的MAC地址进行分组交换。每个端口都有一个MAC地址缓存表记录与它可达的（直连的）站点。MAC缓存条目会逐渐消失，所以必须重新发现，如果要被使用的话。已知目的MAC的二层帧被交换到期待的LAN口。如果MAC在交换机缓存中不存在，则一个广播包（如ARP）会被泛洪到所有的LAN口用来发现哪个口接着该目的MAC。</p>
