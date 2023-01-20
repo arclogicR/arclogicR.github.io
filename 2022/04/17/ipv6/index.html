@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>IPv6地址 | Arclogic的博客</title>
+  <meta name="description" content="IPv6简介什么是IPv6IPv6，Internet Protocol version 6（网际协议第六版），IPv4的升版本。和IPv4类似，IPv6是一种逻辑编址方案，用于网络层主机到主机的通信。 为什么使用IPv6IPv4初期由于其协议简单、易于物理实现等优势，被广泛使用。随着互联网技术迅速发展，IPv4在很多方面已经无法满足现有需求，IPv6的问世解决了IPv4的很多弊端。 IPv4的局限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IPv6地址">
+<meta property="og:url" content="https://arclogicr.github.io/2022/04/17/ipv6/index.html">
+<meta property="og:site_name" content="Arclogic&#39;s Blog">
+<meta property="og:description" content="IPv6简介什么是IPv6IPv6，Internet Protocol version 6（网际协议第六版），IPv4的升版本。和IPv4类似，IPv6是一种逻辑编址方案，用于网络层主机到主机的通信。 为什么使用IPv6IPv4初期由于其协议简单、易于物理实现等优势，被广泛使用。随着互联网技术迅速发展，IPv4在很多方面已经无法满足现有需求，IPv6的问世解决了IPv4的很多弊端。 IPv4的局限">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/17/ipv6/ulc.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/17/ipv6/multi.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/17/ipv6/addr.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/17/ipv6/header.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/17/ipv6/ext_header.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/17/ipv6/frag.png">
+<meta property="article:published_time" content="2022-04-17T12:54:13.000Z">
+<meta property="article:modified_time" content="2023-01-20T03:22:00.769Z">
+<meta property="article:author" content="Arclogic">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="tcp&#x2F;ip">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://arclogicr.github.io/2022/04/17/ipv6/ulc.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://arclogicr.github.io/2022/04/17/ipv6/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Arclogic&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/arclogicr" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Arclogic</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">网络工程师</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>记录工作和生活里一些在意的东西</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%96%87%E6%A1%A3%E7%BF%BB%E8%AF%91/">文档翻译</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/01/12/openwrt-fw1/" class="title">OpenWrt防火墙翻译</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-01-12T10:34:55.000Z" itemprop="datePublished">2023-01-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/01/04/kvmq1/" class="title">kvm如何禁止虚拟机之间通信</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-01-04T07:37:05.000Z" itemprop="datePublished">2023-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/17/ipv6/" class="title">IPv6地址</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-17T12:54:13.000Z" itemprop="datePublished">2022-04-17</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2RS/">路由交换RS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/02/bgp-notes/" class="title">BGP学习笔记</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-02T11:18:05.000Z" itemprop="datePublished">2022-04-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2RS/">路由交换RS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/28/OSPF-QA/" class="title">OSPF经典问题汇总</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-28T08:13:52.000Z" itemprop="datePublished">2022-03-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%96%87%E6%A1%A3%E7%BF%BB%E8%AF%91/">文档翻译</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2RS/">路由交换RS</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/bgp/" rel="tag">bgp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewall/" rel="tag">firewall</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/" rel="tag">kvm</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/" rel="tag">network</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/" rel="tag">openwrt</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ospf/" rel="tag">ospf</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/routing/" rel="tag">routing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/" rel="tag">tcp&#x2F;ip</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/translation/" rel="tag">translation</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</aside>
+
+  
+  
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IPv6%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">IPv6简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFIPv6"><span class="toc-number">1.1.</span> <span class="toc-text">什么是IPv6</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8IPv6"><span class="toc-number">1.2.</span> <span class="toc-text">为什么使用IPv6</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IPv4%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7-x2F-IPv6%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-number">1.2.1.</span> <span class="toc-text">IPv4的局限性&#x2F;IPv6的优势</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IPv6%E5%9C%B0%E5%9D%80"><span class="toc-number">2.</span> <span class="toc-text">IPv6地址</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IPv6%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84"><span class="toc-number">2.1.</span> <span class="toc-text">IPv6地址结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPv6%E5%9C%B0%E5%9D%80%E8%A1%A8%E7%A4%BA"><span class="toc-number">2.2.</span> <span class="toc-text">IPv6地址表示</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IPv6%E5%9C%B0%E5%9D%80%E7%9A%84%E7%AE%80%E5%8C%96%E8%A1%A8%E7%A4%BA"><span class="toc-number">2.2.1.</span> <span class="toc-text">IPv6地址的简化表示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#URL%E7%9A%84IPv6%E8%A1%A8%E7%A4%BA"><span class="toc-number">2.2.2.</span> <span class="toc-text">URL的IPv6表示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IEEE-EUI-64%E8%A7%84%E8%8C%83"><span class="toc-number">2.2.3.</span> <span class="toc-text">IEEE EUI-64规范</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPv6%E5%9C%B0%E5%9D%80%E5%88%86%E7%B1%BB"><span class="toc-number">2.3.</span> <span class="toc-text">IPv6地址分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E6%92%AD"><span class="toc-number">2.3.1.</span> <span class="toc-text">单播</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%AF%E8%81%9A%E5%90%88%E5%85%A8%E7%90%83%E5%8D%95%E6%92%AD%E5%9C%B0%E5%9D%80%EF%BC%88Aggregate-Global-Unicast-Address%EF%BC%89"><span class="toc-number">2.3.1.1.</span> <span class="toc-text">可聚合全球单播地址（Aggregate Global Unicast Address）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%93%BE%E8%B7%AF%E6%9C%AC%E5%9C%B0%E5%9C%B0%E5%9D%80%EF%BC%88Link-Local-Address%EF%BC%89"><span class="toc-number">2.3.1.2.</span> <span class="toc-text">链路本地地址（Link-Local Address）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%94%AF%E4%B8%80%E6%9C%AC%E5%9C%B0%E5%9C%B0%E5%9D%80-%EF%BC%88Unique-Local-Address%EF%BC%89"><span class="toc-number">2.3.1.3.</span> <span class="toc-text">唯一本地地址 （Unique Local Address）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AB%99%E7%82%B9%E6%9C%AC%E5%9C%B0%E5%9C%B0%E5%9D%80-%EF%BC%88Site-Local-Address%EF%BC%89%E5%B7%B2%E5%BC%83%E7%94%A8"><span class="toc-number">2.3.1.4.</span> <span class="toc-text">*站点本地地址 （Site-Local Address）已弃用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%AA%E6%8C%87%E5%AE%9A%E5%9C%B0%E5%9D%80-%EF%BC%88Unspecified-Address%EF%BC%89"><span class="toc-number">2.3.1.5.</span> <span class="toc-text">未指定地址 （Unspecified Address）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%8E%AF%E5%9B%9E%E5%9C%B0%E5%9D%80-%EF%BC%88Loopback-Address%EF%BC%89"><span class="toc-number">2.3.1.6.</span> <span class="toc-text">环回地址 （Loopback Address）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IPv4%E6%98%A0%E5%B0%84%E7%9A%84IPv6%E5%9C%B0%E5%9D%80-%EF%BC%88IPv4-Mapped-IPv6-Address%EF%BC%89"><span class="toc-number">2.3.1.7.</span> <span class="toc-text">IPv4映射的IPv6地址 （IPv4-Mapped IPv6 Address）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IPv4%E5%85%BC%E5%AE%B9%E5%9C%B0%E5%9D%80-%EF%BC%88IPv4-Compatible-IPv6-Address%EF%BC%89-%E5%B7%B2%E5%BC%83%E7%94%A8"><span class="toc-number">2.3.1.8.</span> <span class="toc-text">*IPv4兼容地址 （IPv4-Compatible IPv6 Address） 已弃用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E6%92%AD"><span class="toc-number">2.3.2.</span> <span class="toc-text">组播</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%A2%AB%E8%AF%B7%E6%B1%82%E8%8A%82%E7%82%B9%E7%BB%84%E6%92%AD%E5%9C%B0%E5%9D%80-%EF%BC%88Solicited-Node-Multicast-Address%EF%BC%89"><span class="toc-number">2.3.2.1.</span> <span class="toc-text">被请求节点组播地址 （Solicited-Node Multicast Address）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%BB%E6%84%8F%E6%92%AD"><span class="toc-number">2.3.3.</span> <span class="toc-text">任意播</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IPv6%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.3.4.</span> <span class="toc-text">IPv6报文格式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IPv6%E5%9F%BA%E6%9C%AC%E6%8A%A5%E5%A4%B4"><span class="toc-number">2.3.4.1.</span> <span class="toc-text">IPv6基本报头</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IPv6%E6%8B%93%E5%B1%95%E6%8A%A5%E5%A4%B4"><span class="toc-number">2.3.4.2.</span> <span class="toc-text">IPv6拓展报头</span></a></li></ol></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-ipv6" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      IPv6地址
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2022/04/17/ipv6/" class="article-date">
+	  <time datetime="2022-04-17T12:54:13.000Z" itemprop="datePublished">2022-04-17</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/network/" rel="tag">network</a>, <a class="article-tag-link-link" href="/tags/tcp-ip/" rel="tag">tcp/ip</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/04/17/ipv6/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="IPv6简介"><a href="#IPv6简介" class="headerlink" title="IPv6简介"></a>IPv6简介</h2><h3 id="什么是IPv6"><a href="#什么是IPv6" class="headerlink" title="什么是IPv6"></a>什么是IPv6</h3><p>IPv6，Internet Protocol version 6（网际协议第六版），IPv4的升版本。和IPv4类似，IPv6是一种逻辑编址方案，用于网络层主机到主机的通信。</p>
+<h3 id="为什么使用IPv6"><a href="#为什么使用IPv6" class="headerlink" title="为什么使用IPv6"></a>为什么使用IPv6</h3><p>IPv4初期由于其协议简单、易于物理实现等优势，被广泛使用。随着互联网技术迅速发展，IPv4在很多方面已经无法满足现有需求，IPv6的问世解决了IPv4的很多弊端。</p>
+<h4 id="IPv4的局限性-x2F-IPv6的优势"><a href="#IPv4的局限性-x2F-IPv6的优势" class="headerlink" title="IPv4的局限性&#x2F;IPv6的优势"></a>IPv4的局限性&#x2F;IPv6的优势</h4><ul>
+<li>地址空间</li>
+</ul>
+<p>IPv4的理论可用地址数为2的32次方约43亿个，已经无法满足巨量终端的入网需求，只能依靠NAT等技术减少公网IP的使用。实际上在2019年11月25日欧洲RIPE NCC宣布IPv4地址正式耗尽。</p>
+<p>IPv6地址采用128bit标识，理论上可用地址数是2的128次方，为全部IPv4地址的2的96次方倍，拥有近乎无限的地址空间。</p>
+<ul>
+<li>安全</li>
+</ul>
+<p>IPv4在设计上并没有考虑网络层的安全问题，当时认为安全是上层才需要负责的。</p>
+<p>IPv6集成了IPSec，支持IPSec的认证和加密。由于充足的地址空间，使得层次化地址分配成为可能，容易溯源。对于攻击者，在有限的时间内，无法遍历巨量的IPv6地址。</p>
+<ul>
+<li>通信模型</li>
+</ul>
+<p>由于NAT的大量使用，破坏了端到端的模型，由此衍生了一些列繁琐的配置（如端口映射）</p>
+<p>IPv6地址充足，无需使用NAT。</p>
+<ul>
+<li>路由聚合</li>
+</ul>
+<p>互联网在世界各地发展并不均衡，所以IPv4在分配时各地区所获得的地址并不连续。这会导致每个地区的公网路由无法被聚合，路由表会相当庞大，对路由设备性能要求极高。</p>
+<p>IPv6可以很方便的进行层次化网络部署，方便路由聚合，提高转发效率。</p>
+<ul>
+<li>配置</li>
+</ul>
+<p>IPv4没有重编功能，网卡原则上职能配置一个IPv4地址，而一个网卡可以配置多个并重的IPv6问题，简化重编值的复杂性。</p>
+<p>IPv6内置自动配置，可使得主机自动发现网络并获取IPv6地址，提高管理效率。</p>
+<ul>
+<li>处理效率</li>
+</ul>
+<p>IPv4包头字段相对较多，对网络设备有一定性能要求</p>
+<p>IPv6去除了标志位、段偏移、头部校验和、选项等字段，只增加流标签域方便做QoS，因此IPv6报头更为简化，提高处理效率。</p>
+<h2 id="IPv6地址"><a href="#IPv6地址" class="headerlink" title="IPv6地址"></a>IPv6地址</h2><h3 id="IPv6地址结构"><a href="#IPv6地址结构" class="headerlink" title="IPv6地址结构"></a>IPv6地址结构</h3><p>一个IPv6地址由128个bit组成。一个十六进制数可以表示4个bit，通常用32个16进制数四个一组表示IPv6地址。如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2001:0db8:02de:0000:0000:0000:0000:0e13/64</span><br></pre></td></tr></table></figure>
+
+<p>在一个IPv6地址中分为前缀和接口号两个部分。前缀和IPv4中网络号类似，用于标识一个网络；接口号和IPv4中主机号类似，用于标识终端。上述IPv6地址所在的网络是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2001:0db8:02de:0000:0000:0000:0000:0000/64</span><br></pre></td></tr></table></figure>
+
+<h3 id="IPv6地址表示"><a href="#IPv6地址表示" class="headerlink" title="IPv6地址表示"></a>IPv6地址表示</h3><h4 id="IPv6地址的简化表示"><a href="#IPv6地址的简化表示" class="headerlink" title="IPv6地址的简化表示"></a>IPv6地址的简化表示</h4><p>IPv6地址采用冒号分十六进制的方式表示。128bit长的IPv6地址可以表示8组4个十六进制数，用冒号隔开（如上述IPv6地址）。</p>
+<p>其中，</p>
+<ul>
+<li><p>每一组的前导0可以省略</p>
+</li>
+<li><p>连续的0可以用::来省略</p>
+</li>
+<li><p>一个IPv6地址中只能使用一次::来省略连续的0（不然无法唯一确定连续0的个数）。</p>
+</li>
+</ul>
+<p>如上述IPv6地址可简写为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2001:db8:2de::e13/64</span><br></pre></td></tr></table></figure>
+
+<h4 id="URL的IPv6表示"><a href="#URL的IPv6表示" class="headerlink" title="URL的IPv6表示"></a>URL的IPv6表示</h4><p>在URL中，需要使用[]来确定IPv6地址，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://[2001:ab:123::cdef]:8080/index.html</span><br></pre></td></tr></table></figure>
+
+<h4 id="IEEE-EUI-64规范"><a href="#IEEE-EUI-64规范" class="headerlink" title="IEEE EUI-64规范"></a>IEEE EUI-64规范</h4><p>IEEE EUI-64规范定义了如何将网络接口的MAC地址转换为IPv6接口标识。网卡物理地址由48bit组成，使用十六进制可表示为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0050:A1AB:CDEF</span><br></pre></td></tr></table></figure>
+
+<p>MAC地址的前24位（0050A1）为厂商标识，后24位（ABCDEF）为扩展标识符。从高位数，第7位是0表示了MAC地址本地唯一。</p>
+<p>MAC转换位IPv6接口方法：</p>
+<p>将48位的MAC地址从中间分开，插入一个固定数值FFFE</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0050:A1AB:CDEF--&gt;0050:A1FF:FEAB:CDEF</span><br></pre></td></tr></table></figure>
+
+<p>然后将第7个比特位反转，如果原来是0，就变为1,如果原来是1，就变为0</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0050:A1FF:FEAB:CDEF--&gt;0250:A1FF:FEAB:CDEF</span><br></pre></td></tr></table></figure>
+
+<p>这种由MAC地址产生IPv6地址接口标识的方法可以减少配置的工作量，尤其是当采用无状态地址自动配置时，只需要获取一个IPv6前缀就可以与接口标识形成IPv6地址。但是使用这种方式最大的缺点是任何人都可以通过二层MAC地址推算出三层IPv6地址。</p>
+<h3 id="IPv6地址分类"><a href="#IPv6地址分类" class="headerlink" title="IPv6地址分类"></a>IPv6地址分类</h3><p>IPv6没有广播的概念，所以没有ARP包，也没有广播地址。IPv6地址分为单播、组播和任意播。</p>
+<h4 id="单播"><a href="#单播" class="headerlink" title="单播"></a>单播</h4><p>单播地址用于一对一的连接，主要有以下几种类型</p>
+<h5 id="可聚合全球单播地址（Aggregate-Global-Unicast-Address）"><a href="#可聚合全球单播地址（Aggregate-Global-Unicast-Address）" class="headerlink" title="可聚合全球单播地址（Aggregate Global Unicast Address）"></a>可聚合全球单播地址（Aggregate Global Unicast Address）</h5><p>可聚合全球单播地址类似于IPv4的公网地址，可在全球路由。目前前三位为001的IPv6地址被用作可聚合全球单播地址，即2000:&#x2F;3，占了12.5%的IPv6地址空间</p>
+<p><strong>IPv6全球可路由地址的分配</strong></p>
+<p>由于IPv6采用分级编址，IPv6全球可路由地址前缀由地址分配机构逐级向下分配：</p>
+<table>
+<thead>
+<tr>
+<th>前缀长度</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>32</td>
+<td>RIR&#x2F;NIR（区域&#x2F;国家互联网注册机构）分配给有 ASN 的运营商、互联网公司、大型企业。是地址最小分配单元（再小就不给了）。</td>
+</tr>
+<tr>
+<td>40</td>
+<td>运营商向有多个（256个以内）站点和数据中心的大型企业分配的前缀</td>
+</tr>
+<tr>
+<td>44</td>
+<td>运营商向有多个（16个以内）站点和数据中心的中型企业分配的前缀</td>
+</tr>
+<tr>
+<td>48</td>
+<td>运营商向中小客户分配的常见前缀长度。或大中企业内一个站点的前缀</td>
+</tr>
+<tr>
+<td>56</td>
+<td>宽带运营商给家庭用户和小微企业分配的最小前缀长度（最大子网大小）</td>
+</tr>
+<tr>
+<td>64</td>
+<td>末端设备子网，&#x2F;64 是很多协议硬性要求的（IPv6 无广播风暴风险）</td>
+</tr>
+<tr>
+<td>127</td>
+<td>路由器点对点链路，此处不是为了节约地址而是防止一种资源耗尽型攻击</td>
+</tr>
+</tbody></table>
+<h5 id="链路本地地址（Link-Local-Address）"><a href="#链路本地地址（Link-Local-Address）" class="headerlink" title="链路本地地址（Link-Local Address）"></a>链路本地地址（Link-Local Address）</h5><p>链路本地地址是一个<strong>只在本链路有效</strong>的IPv6地址。在一个节点启用IPv6后，每个接口都会生成以一个链路本地地址。链路本地地址前10bit固定，为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fe80::/10</span><br></pre></td></tr></table></figure>
+
+<p>其后64位通常根据EUI-64格式来构造，但也有的终端是根据一定算法生成（处于安全原因），如：windows。</p>
+<p>链路本地地址唯一标识一个节点，在本地链路看到下一跳都是对端的Link Local地址，在网络重新编址过程中，节点和路由器的Link Local地址不会发生变化，可以很容易地做一个修改，不用担心中断。</p>
+<h5 id="唯一本地地址-（Unique-Local-Address）"><a href="#唯一本地地址-（Unique-Local-Address）" class="headerlink" title="唯一本地地址 （Unique Local Address）"></a>唯一本地地址 （Unique Local Address）</h5><p>唯一本地地址类似于IPv4私网地址，今能在站点本地使用。由于站点本地地址被废除，唯一本地地址用来代替站点本地地址。</p>
+<p>固定前缀为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FC00::/7</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/04/17/ipv6/ulc.png" alt="IPV6"></p>
+<p>其中，</p>
+<p>L为标志位，值为1表示该地址为在本地网络范围内使用的地址；为0被保留，相当于只有FD00::&#x2F;8被使用</p>
+<p>Global ID为全球唯一前缀；随机产生</p>
+<p>Subnet ID为子网ID；用于划分子网</p>
+<p>Interface ID；接口标识</p>
+<p>唯一本地地址拥有全球唯一前缀，可以在私有网络之间通信。</p>
+<h5 id="站点本地地址-（Site-Local-Address）已弃用"><a href="#站点本地地址-（Site-Local-Address）已弃用" class="headerlink" title="*站点本地地址 （Site-Local Address）已弃用"></a>*站点本地地址 （Site-Local Address）已弃用</h5><p>IPv6的保留地址，类似于IPv4的私网地址，<strong>只能在站点本地使用，无法在公网路由</strong>。站点本地地址占整个地址空间0.1%。</p>
+<p>站点本地地址前10bit固定，为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FEC0::/10</span><br></pre></td></tr></table></figure>
+
+<p>后54为左右子网标识，最后64为用于接口标识。</p>
+<h5 id="未指定地址-（Unspecified-Address）"><a href="#未指定地址-（Unspecified-Address）" class="headerlink" title="未指定地址 （Unspecified Address）"></a>未指定地址 （Unspecified Address）</h5><p>未指定地址表示地址未被指定，或者表示默认路由（所有路由），形式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0:0:0:0:0:0:0:0 或 ::</span><br></pre></td></tr></table></figure>
+
+<h5 id="环回地址-（Loopback-Address）"><a href="#环回地址-（Loopback-Address）" class="headerlink" title="环回地址 （Loopback Address）"></a>环回地址 （Loopback Address）</h5><p>换回地址表示几点自己，在本节点有效，和IPv4类似，形式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0:0:0:0:0:0:0:1 或::1</span><br></pre></td></tr></table></figure>
+
+<h5 id="IPv4映射的IPv6地址-（IPv4-Mapped-IPv6-Address）"><a href="#IPv4映射的IPv6地址-（IPv4-Mapped-IPv6-Address）" class="headerlink" title="IPv4映射的IPv6地址 （IPv4-Mapped IPv6 Address）"></a>IPv4映射的IPv6地址 （IPv4-Mapped IPv6 Address）</h5><p>IPv4映射的IPv6地址是包含IPv4的IPv6地址，用于双栈的本地范围</p>
+<p>其中高80bit为0，后跟16bit的1，在跟IPv4地址，如：</p>
+<p>IPv4地址</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">100.100.100.100</span><br></pre></td></tr></table></figure>
+
+<p>的IPv4映射的IPv6地址为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">::ffff:6464:6464</span><br></pre></td></tr></table></figure>
+
+<h5 id="IPv4兼容地址-（IPv4-Compatible-IPv6-Address）-已弃用"><a href="#IPv4兼容地址-（IPv4-Compatible-IPv6-Address）-已弃用" class="headerlink" title="*IPv4兼容地址 （IPv4-Compatible IPv6 Address） 已弃用"></a>*IPv4兼容地址 （IPv4-Compatible IPv6 Address） 已弃用</h5><p> IPv4兼容的IPv6地址是包含IPv4的IPv6地址，用于在IPv4网络上建立自动隧道，传输IPv6包</p>
+<p>其中高96比特设置为0，后面设置为32bit的IPv4地址，如：</p>
+<p>IPv4地址</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">100.100.100.100</span><br></pre></td></tr></table></figure>
+
+<p>的IPv4兼容的IPv6地址为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">::6464:6464</span><br></pre></td></tr></table></figure>
+
+<p>这种机制不太完善，后被弃用</p>
+<h4 id="组播"><a href="#组播" class="headerlink" title="组播"></a>组播</h4><p>组播用于一对多的通信、</p>
+<p>组播前缀固定FF00::&#x2F;8，占用约0.38的IPv6地址空间</p>
+<p><img src="/2022/04/17/ipv6/multi.png" alt="IPV6 MULTI"></p>
+<p>其中，</p>
+<p>FF为前8位固定值</p>
+<p>Flag标志位0000永久保留</p>
+<p>Scope传播范围</p>
+<p>Scope定义了组播地址的范围，取值与范围如下：</p>
+<table>
+<thead>
+<tr>
+<th>十六进制</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>本地接口</td>
+</tr>
+<tr>
+<td>2</td>
+<td>本地链路</td>
+</tr>
+<tr>
+<td>3</td>
+<td>本地子网</td>
+</tr>
+<tr>
+<td>4</td>
+<td>本地管理</td>
+</tr>
+<tr>
+<td>5</td>
+<td>本地站点</td>
+</tr>
+<tr>
+<td>8</td>
+<td>组织机构</td>
+</tr>
+<tr>
+<td>E</td>
+<td>全球</td>
+</tr>
+</tbody></table>
+<p>RFC2373建议将后112的前80为置0，后32位为组播的组ID</p>
+<h5 id="被请求节点组播地址-（Solicited-Node-Multicast-Address）"><a href="#被请求节点组播地址-（Solicited-Node-Multicast-Address）" class="headerlink" title="被请求节点组播地址 （Solicited-Node Multicast Address）"></a>被请求节点组播地址 （Solicited-Node Multicast Address）</h5><p>被请求节点组播地址根据每一个单播和任意播地址生成一个对应的组播地址，并加入该组播组。被请求节点组播地址只在本地有效。被请求节点组播地址用于邻居发现和DAD地址重复检测。</p>
+<p>被请求节点组播地址固定前缀为FF02::1:FF00:0000&#x2F;104，将IPv6地址的后24位填充到被请求节点组播地址的接口标识就组成了改IPv6地址的被请求节点组播地址。如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2001::ABCD:ABCD/64</span><br></pre></td></tr></table></figure>
+
+<p>对应的被请求节点组播地址为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FF02::1:FFCD:ABCD/104</span><br></pre></td></tr></table></figure>
+
+<p>如图，在路由器的一个接口上开启IPv6功能，然后查看该接口的ipv6的状态</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int e0/0</span><br><span class="line"> ipv6 enable</span><br><span class="line">end</span><br><span class="line">show ipv6 int e0/0</span><br></pre></td></tr></table></figure>
+
+<p>显示结果如下：</p>
+<p><img src="/2022/04/17/ipv6/addr.png" alt="IPV6 ADDR"></p>
+<p>其中可以看到IPv6使能后，接口生成了链路本地地址，为FE80::A8BB:CCFF:FE00:200，并为它生成了被请求节点组播地址FF02::1:FF00:200</p>
+<p>由于被请求节点组播地址是可以根据IPv6地址容易计算出来的，当需要解析链路上IPv6的二层地址时，可以通过NS报文发送至改IPv6的被请求节点组播地址，实现了类似IPv4中的ARP解析功能。</p>
+<h4 id="任意播"><a href="#任意播" class="headerlink" title="任意播"></a>任意播</h4><p>任意播本质是单播。任意播标识一组设备，需在网络设备如路由器上定义一个单播IPv6地址为任意播地址，当路由器收到目的地址为任意播地址时，会将其转发到最近的任意播地址。这种机制在网络层面上起到了类似于CDN的作用，就近分配任务。</p>
+<p>IPv6没有为任意播单独定义地址空间，任意播和单播使用相同地址空间，任意播不可以作为源IPv6地址。</p>
+<h4 id="IPv6报文格式"><a href="#IPv6报文格式" class="headerlink" title="IPv6报文格式"></a>IPv6报文格式</h4><p>IPv6报文由IPv6基本报头、IPv6扩展报头和上层协议数据三部分组成</p>
+<h5 id="IPv6基本报头"><a href="#IPv6基本报头" class="headerlink" title="IPv6基本报头"></a>IPv6基本报头</h5><p>IPv6报头格式如下</p>
+<p><img src="/2022/04/17/ipv6/header.png" alt="IPV6 HEADER"></p>
+<p>其中</p>
+<p>Version，为版本号，固定为6</p>
+<p>Traffic Class，为流类别，与IPv4中TOS类似，定义流的类别</p>
+<p>Flow Label，为流标签，新增字段，区分实时流量，网络设备可根据这个字段更高效的转发</p>
+<p>Payload Length，为有效载荷长度，16bit，表示出基本头以外的载荷（拓展头和上层数据）长度，超过65535会置0</p>
+<p>Next Header，为下一个报头，即紧跟在基本报头后的协议类型（可以是拓展报头也可以是上层协议）</p>
+<p>Hop Limit，为跳数限制，类似于IPv4中的TTL，定义了IPv6数据包可以经过的最大跳数</p>
+<p>Source Address，为源IPv6地址</p>
+<p>Destination Address，为目的IPv6地址</p>
+<h5 id="IPv6拓展报头"><a href="#IPv6拓展报头" class="headerlink" title="IPv6拓展报头"></a>IPv6拓展报头</h5><p>IPv4中，IPv4报头包含可选字段Options，这些选项会增加IPv4报头长度，校验和也会改变，在实际中很少使用。</p>
+<p>IPv6不使用Options字段，改用拓展报头。IPv6拓展报头位于IPv6基本报头与上层数据之间，根据需要可任意添加0个或多个拓展报头。下一级拓展报头通过上一级报头的Next Header字段指明协议类型。拓展报头格式如下：</p>
+<p><img src="/2022/04/17/ipv6/ext_header.png" alt="IPV6 EXTHEADER"></p>
+<p>RFC2460中定义了6钟IPv6拓展头</p>
+<table>
+<thead>
+<tr>
+<th>IPv6拓展头</th>
+<th>Next Header</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>逐跳选项</td>
+<td>0</td>
+<td>巨型载荷；设备提示；RSVP</td>
+</tr>
+<tr>
+<td>目的选项</td>
+<td>60</td>
+<td>携带目的节点才会处理的信息</td>
+</tr>
+<tr>
+<td>路由</td>
+<td>43</td>
+<td>携带IPv6路由信息，强制指定数据包经过特点设备</td>
+</tr>
+<tr>
+<td>分段</td>
+<td>44</td>
+<td>IPv6也受MTU限制，通过分段拓展报头进行分段</td>
+</tr>
+<tr>
+<td>认证</td>
+<td>51</td>
+<td>由IPsec使用，提供认证、完整性和重放等保护</td>
+</tr>
+<tr>
+<td>封装安全净载</td>
+<td>50</td>
+<td>由IPsec使用，类似于AH</td>
+</tr>
+</tbody></table>
+<p>IPv6大包ping分段拓展头抓包结果如下：</p>
+<p><img src="/2022/04/17/ipv6/frag.png" alt="IPV6 FRAG"></p>
+<p>可以看到，IPv6基本头中的Next Header为分段拓展头协议号44，IPv6拓展报头中的Next Header指向ICMPv6协议号58</p>
+<p>当超过一种扩展报头被用在同一个IPv6报文里时，不是所有的拓展报头都需要被处理，但报头必须按照下列顺序出现：</p>
+<ul>
+<li>IPv6基本报头</li>
+<li>逐跳选项扩展报头</li>
+<li>目的选项扩展报头</li>
+<li>路由扩展报头</li>
+<li>分段扩展报头</li>
+<li>认证扩展报头</li>
+<li>封装安全有效载荷扩展报头</li>
+<li>目的选项扩展报头</li>
+<li>上层协议数据报文</li>
+</ul>
+<p>目的选项拓展报头可能出现1或2次，其它拓展报头只能出现一次。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://arclogicr.github.io/2022/04/17/ipv6/" title="IPv6地址" target="_blank" rel="external">https://arclogicr.github.io/2022/04/17/ipv6/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/arclogicr" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/arclogicr" target="_blank"><span class="text-dark">Arclogic</span><small class="ml-1x">网络工程师</small></a></h3>
+        <div>大勇若怯，大智若愚</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2023/01/04/kvmq1/" title="kvm如何禁止虚拟机之间通信"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2022/04/02/bgp-notes/" title="BGP学习笔记"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+    <div class="copyright">
+    	
+        &copy; 2023 Arclogic
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-55WVJ2X9MK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-55WVJ2X9MK');
+</script>
+
+
+
+
+</body>
+</html>
