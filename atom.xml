@@ -6,7 +6,7 @@
   <link href="https://arclogicr.github.io/atom.xml" rel="self"/>
   
   <link href="https://arclogicr.github.io/"/>
-  <updated>2023-01-20T15:11:55.629Z</updated>
+  <updated>2023-01-27T05:48:44.703Z</updated>
   <id>https://arclogicr.github.io/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>虚拟机部署OpenWrt外部无法访问问题</title>
+    <link href="https://arclogicr.github.io/2023/01/16/openwrt-ts/"/>
+    <id>https://arclogicr.github.io/2023/01/16/openwrt-ts/</id>
+    <published>2023-01-16T14:10:58.000Z</published>
+    <updated>2023-01-27T05:48:44.703Z</updated>
+    
+    <content type="html"><![CDATA[<p>前几天心血来潮，想尝试下<a href="https://arclogicr.github.io/2023/01/14/openwrt-ply/">使用VirtualBox部署OpenWrt充当旁路由</a>。在配完OpenWrt后，手机的流量死活没有办法被旁路由转发。当时以为是OpenWrt设置问题，详细查阅了OpenWrt官网有关接口和防火墙的设置，折腾半天并没有解决。作为一个网工老司机，应用功能可以没有实现，网络绝不能不通。绝对无法忍受在我面前发生网络不通。于是又折腾两天，终于找到原因了。下面是排错（pò àn）过程</p><h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>物理拓扑如下，手机可正常通过无线路由器上网，笔记本无线连接至无线路由器。</p><p><img src="/2023/01/16/openwrt-ts/topo_physical.png" alt="OPENWRT PHY"></p><p>其中，</p><ul><li><p>手机为iphone，无线连接至主路由器，自动获得来自主路由分配的IP为192.168.3.101&#x2F;24，GW192.168.3.1</p></li><li><p>主路由器为某普通家用无线路由器，LAN口地址192.168.3.1&#x2F;24</p></li><li><p>笔记本电脑内运行VirtualBox虚拟机桥接到无线网卡，开启混杂模式，虚拟机运行OpenWrt22.03.3；OpenWrt关键配置如下：</p><ul><li><p>网卡数：1张</p></li><li><p>接口配置：静态地址，IP 192.168.3.2&#x2F;24，GW 192.168.3.1；</p></li><li><p>防火墙：INPUT,OUTPUT,FORWARD全通，开启MASQ（PAT）</p></li></ul></li></ul><h2 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h2><p>按照如上环境配置后，将手机网络设置为手动，GW改为192.168.3.2，DNS改为223.5.5.5。理论上来说手机应该可以正常上网，预想中的逻辑拓扑如下</p><p><img src="/2023/01/16/openwrt-ts/topo_logical.png" alt="OPENWRT LOG"></p><p>各终端IP参数如下</p><table><thead><tr><th></th><th>MAC</th><th>IP DHCP自动获取</th><th>IP手动配置</th></tr></thead><tbody><tr><td>笔记本电脑</td><td>AAAA.AAAA.AAAA</td><td>192.168.3.102</td><td>192.168.3.102</td></tr><tr><td>手机</td><td>BBBB.BBBB.BBBB</td><td>192.168.3.101</td><td></td></tr><tr><td>OpenWrt虚拟机</td><td>CCCC.CCCC.CCCC</td><td></td><td>192.168.3.2</td></tr><tr><td>无线路由器</td><td>DDDD.DDDD.DDDD</td><td></td><td>192.168.3.1</td></tr><tr><td>win10虚拟机</td><td>EEEE.EEEE.EEEE</td><td></td><td>192.168.168.3.103</td></tr></tbody></table><p>OpenWrt虚拟机，笔记本电脑和手机应当可以视作在同一二层局域网。预想中的通信过程如下:</p><p>首先，当手机连接WIFI后，发送ARP广播请求192.168.3.2（OpenWrt）的mac地址；OpenWrt回复ARP。</p><p>然后手机开始通信，假设ping 223.5.5.5，即发送icmp，源目地址如下</p><table><thead><tr><th>SMAC</th><th>DMAC</th><th>SIP</th><th>DIP</th></tr></thead><tbody><tr><td>BBBB.BBBB.BBBB</td><td>CCCC.CCCC.CCCC</td><td>192.168.3.101</td><td>223.5.5.5</td></tr></tbody></table><p>OpenWrt收到报文后做PAT转发，转发报文的源目地址如下：</p><table><thead><tr><th>SMAC</th><th>DMAC</th><th>SIP</th><th>DIP</th></tr></thead><tbody><tr><td>CCCC.CCCC.CCCC</td><td>DDDD.DDDD.DDDD</td><td>192.168.3.2</td><td>223.5.5.5</td></tr></tbody></table><p>然后无线路由器将OpenWrt的包当做某个终端正常的包进行转发，收到223.5.5.5的回复后转发给OpenWrt，OpenWrt再根据PAT转发表转发回给手机</p><h2 id="故障排查"><a href="#故障排查" class="headerlink" title="故障排查"></a>故障排查</h2><p>事实上安装上述环境配置后，手机无法上网。随后开始故障排查</p><h3 id="确认OpenWrt收到来自手机的数据包"><a href="#确认OpenWrt收到来自手机的数据包" class="headerlink" title="确认OpenWrt收到来自手机的数据包"></a>确认OpenWrt收到来自手机的数据包</h3><p>首先，怀疑OpenWrt没有收到手机的包，于是在OpenWrt上安装tcpdump，使用如下命令抓包</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcpdump -i eth0 icmp</span><br></pre></td></tr></table></figure><p>发现OpenWrt有收到手机192.168.3.101的包，但是没有转发出去的包</p><h3 id="确认OpenWrt配置"><a href="#确认OpenWrt配置" class="headerlink" title="确认OpenWrt配置"></a>确认OpenWrt配置</h3><p>然后怀疑OpenWrt配置有问题，反复确认OpenWrt接口配置，防火墙配置。发现并没有问题，而且可以肯定：<strong>接口可以是桥接的接口，也可以是单独的接口</strong>；<strong>防火墙转发设置可以配置MASQ IP地址伪装，也可以不配置，不影响ping结果</strong>。</p><h3 id="新建测试机"><a href="#新建测试机" class="headerlink" title="新建测试机"></a>新建测试机</h3><p>这就很奇怪了，明明OpenWrt配置正确，也受到了包，死活不转发。这样排除了OpenWrt的问题，只能怀疑是VirtualBox的问题。</p><p>后来，我尝试新建一台win 10虚拟机，网络也是桥接模式，使用这台win10配置OpenWrt作为网关居然可以正常上网。在OpenWrt上抓包，也能抓到全部过程。</p><h3 id="比较win10和手机的包"><a href="#比较win10和手机的包" class="headerlink" title="比较win10和手机的包"></a>比较win10和手机的包</h3><p>按照之前的逻辑拓扑，如果添加了win10虚拟机，win10虚拟机 应该也是属于同一二层，不应该和手机有什么不一样的地方。但事实显示确实win10可以正常上网，手机不能。于是准备在OpenWrt上比较两个包，在OpenWrt上使用以下命令抓包并保存：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcpdump -i eth0 -w cap.cap</span><br></pre></td></tr></table></figure><p>在抓包期间，用手机和win10都发起对223.5.5.5的ping包。终于得到了很有趣的结果：</p><p>手机包</p><table><thead><tr><th>SMAC</th><th>DMAC</th><th>SIP</th><th>DIP</th></tr></thead><tbody><tr><td>BBBB.BBBB.BBBB</td><td><strong>AAAA.AAAA.AAAA</strong></td><td>192.168.3.101</td><td>223.5.5.5</td></tr></tbody></table><p>win10 ping包</p><table><thead><tr><th>SMAC</th><th>DMAC</th><th>SIP</th><th>DIP</th></tr></thead><tbody><tr><td>EEEE.EEEE.EEEE</td><td>CCCC.CCCC.CCCC</td><td>192.168.3.103</td><td>223.5.5.5</td></tr></tbody></table><p>很明显，win10的包是符合预期的；手机包源目ip符合预期，但MAC居然是笔记本的MAC。这有点搞糊涂了，颠覆了我对桥接的认知；这说明，<strong>手机请求OpenWrt 即192.168.3.2的MAC地址，收到的回复确是笔记本的MAC</strong>（后来使用另一台电脑做客户端验证了这一点，arp表项确实是这样显示的）。但这个现象确实反应了手机无法上网的本质原因，由于之前tcpdump抓包默认只显示ip地址，忽略了二层mac地址；看来问题就出在这里：<strong>手机包发过来的目的MAC是笔记本即宿主机，而win10虚拟机则为OpenWrt的MAC</strong></p><h3 id="手机ping-OpenWrt"><a href="#手机ping-OpenWrt" class="headerlink" title="手机ping OpenWrt"></a>手机ping OpenWrt</h3><p>既然是这样，那是不是手机ping OpenWrt 192.168.3.2也不通呢，尝试了一下，发现是通的。而手机ping OpenWrt时，OpenWrt收到的MAC却是自己并不是笔记本的MAC。这十有八九是VirtualBox如何处理桥接包的问题了。</p><h3 id="坑爹的VirualBox桥接机制"><a href="#坑爹的VirualBox桥接机制" class="headerlink" title="坑爹的VirualBox桥接机制"></a>坑爹的VirualBox桥接机制</h3><p>一切矛头指向VirutualBox，最后去查看VirutualBox文档，找到了<a href="https://www.virtualbox.org/manual/UserManual.html#network_bridged">官方对桥接的解释</a></p><p>原文是：</p><p>Note</p><p>Bridging to a wireless interface is done differently from bridging to a wired interface, because most wireless adapters do not support promiscuous mode. All traffic has to use the MAC address of the host’s wireless adapter, and therefore Oracle VM VirtualBox needs to replace the source MAC address in the Ethernet header of an outgoing packet to make sure the reply will be sent to the host interface. When Oracle VM VirtualBox sees an incoming packet with a destination IP address that belongs to one of the virtual machine adapters it replaces the destination MAC address in the Ethernet header with the VM adapter’s MAC address and passes it on. Oracle VM VirtualBox examines ARP and DHCP packets in order to learn the IP addresses of virtual machines.</p><p>翻译过来意思大概是</p><p>注意</p><p>桥接到一个无线网会和桥接到有线网卡有些不同，因为大多数无线适配器不支持混杂模式。所有流量都要使用主机的无线适配器的MAC地址，所以Oracle VirutualBox需要替换出去的以太头的源MAC地址来确保回复会被送到主机接口。<strong>当Oracle VirtualBox看到一个进来的包目的IP属于某个虚拟机的适配器时，它替换目的以太头MAC地址为VM虚拟机的适配器MAC地址并传到改虚拟机适配器</strong>。Oracle VirutualBox检查ARP和DHCP包以用来学习虚拟机的IP地址</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们一开始的预期在有线网卡的情况下都是对的，无线网卡不支持混杂模式，即不接受目的MAC不为自己的报文，所以就有上述官方文档转换MAC的机制。但这种机制<strong>只是转换目的IP为虚拟机的报文</strong>，我们由于使用虚拟机做转发，所以目的IP并不是虚拟机的IP，导致不通。<br>最后我们对目的地址不为自己时的处理方式做个总结：</p><p>对于一台主机（不运行虚拟机）来说：</p><ul><li><p>收到mac地址不为自己的包，都会直接丢弃；</p></li><li><p>收到IP地址不为自己但mac为自己的包，如果系统开启了ip转发功能则会转发此包，否则丢弃</p></li></ul><p>对于宿主机（桥接模式）来说</p><ul><li><p>收到mac或IP不为自己的包，交由虚拟机管理程序处理<br>无线网卡：</p><ul><li><p>若mac不为宿主机，则丢弃（无线网卡不支持混杂模式）</p></li><li><p>若IP不是任何一台虚拟机的IP，mac为宿主机IP，交由宿主机处理（但是抓包看的到，因为混杂模式可以监听到宿主机物理网卡的数据包）</p></li><li><p>若IP是其中某台虚拟机IP，mac为宿主机IP，转发到此虚拟机</p></li></ul><p>有线网卡（开启混杂模式）：</p><ul><li><p>若mac是宿主机，交由宿主机处理；</p></li><li><p>若mac不是任何一台虚拟机的mac，也不是宿主机mac，丢弃；</p></li><li><p>若mac是其中一台虚拟机的mac，转发到此虚拟机</p></li></ul></li></ul><h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>将无线改为有线，完美解决。。。。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;前几天心血来潮，想尝试下&lt;a href=&quot;https://arclogicr.github.io/2023/01/14/openwrt-ply/&quot;&gt;使用VirtualBox部署OpenWrt充当旁路由&lt;/a&gt;。在配完OpenWrt后，手机的流量死活没有办法被旁路由转发。当时</summary>
+      
+    
+    
+    
+    <category term="疑难杂症" scheme="https://arclogicr.github.io/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/"/>
+    
+    
+    <category term="network" scheme="https://arclogicr.github.io/tags/network/"/>
+    
+    <category term="openwrt" scheme="https://arclogicr.github.io/tags/openwrt/"/>
+    
+    <category term="virtualbox" scheme="https://arclogicr.github.io/tags/virtualbox/"/>
+    
+  </entry>
   
   <entry>
     <title>使用VirtualBox部署OpenWrt充当旁路由</title>
