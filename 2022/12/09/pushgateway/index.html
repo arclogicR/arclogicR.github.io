@@ -17,26 +17,25 @@
   <meta http-equiv="window-target" content="_top" />
   
   
-  <title>OSPF经典问题汇总 | Arclogic的博客</title>
-  <meta name="description" content="OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外路由重分布能力位）；">
+  <title>使用pushgateway监控需要上传文件的应用接口 | Arclogic的博客</title>
+  <meta name="description" content="背景简介 什么是Promethuesprometheus是一套开源的监控系统，可以非常全面地监测硬件服务器、存储、网络、API等监控对象。prometheus主要采用pull模式，即，prometheus服务器通过http get请求来获取各个监控对象的监控数据。当然，各监控对象需要安装相应的node expoter客户端。此外，由于一些特殊的监控和自定义监控，prometheus也提供了blac">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OSPF经典问题汇总">
-<meta property="og:url" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/index.html">
+<meta property="og:title" content="使用pushgateway监控需要上传文件的应用接口">
+<meta property="og:url" content="https://arclogicr.github.io/2022/12/09/pushgateway/index.html">
 <meta property="og:site_name" content="Arclogic&#39;s Blog">
-<meta property="og:description" content="OSPF采用分区域设计有什么好处？ 可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力 减少1，2类LSA泛洪 减少路由收敛的范围，一个区域的问题不会影响其它区域  影响OSPF邻接的原因有哪些？1、ROUTER ID不能相同；2、HELLO时间必须一致；3、DEAD时间必须一致；4、区域ID必须相同；5、认证必须相同；6、STUB标志位必须相同（hello包中域外路由重分布能力位）；">
+<meta property="og:description" content="背景简介 什么是Promethuesprometheus是一套开源的监控系统，可以非常全面地监测硬件服务器、存储、网络、API等监控对象。prometheus主要采用pull模式，即，prometheus服务器通过http get请求来获取各个监控对象的监控数据。当然，各监控对象需要安装相应的node expoter客户端。此外，由于一些特殊的监控和自定义监控，prometheus也提供了blac">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID1.png">
-<meta property="og:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID2.png">
-<meta property="article:published_time" content="2022-03-28T08:13:52.000Z">
-<meta property="article:modified_time" content="2023-01-17T07:30:20.667Z">
+<meta property="og:image" content="https://arclogicr.github.io/2022/12/09/pushgateway/prometheus_architecture.png">
+<meta property="article:published_time" content="2022-12-09T15:10:18.000Z">
+<meta property="article:modified_time" content="2023-01-28T02:58:47.669Z">
 <meta property="article:author" content="Arclogic">
-<meta property="article:tag" content="network">
-<meta property="article:tag" content="routing">
-<meta property="article:tag" content="ospf">
+<meta property="article:tag" content="monitor">
+<meta property="article:tag" content="prometheus">
+<meta property="article:tag" content="pushgateway">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://arclogicr.github.io/2022/03/28/OSPF-QA/RID1.png">
+<meta name="twitter:image" content="https://arclogicr.github.io/2022/12/09/pushgateway/prometheus_architecture.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://arclogicr.github.io/2022/03/28/OSPF-QA/index.html">
+  <link rel="canonical" href="https://arclogicr.github.io/2022/12/09/pushgateway/index.html">
   
     <link rel="alternate" href="/atom.xml" title="Arclogic&#39;s Blog" type="application/atom+xml">
   
@@ -291,21 +290,21 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E9%87%87%E7%94%A8%E5%88%86%E5%8C%BA%E5%9F%9F%E8%AE%BE%E8%AE%A1%E6%9C%89%E4%BB%80%E4%B9%88%E5%A5%BD%E5%A4%84%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">OSPF采用分区域设计有什么好处？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8DOSPF%E9%82%BB%E6%8E%A5%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">影响OSPF邻接的原因有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9COSPF%E5%8F%8C%E6%96%B9%E8%B7%AF%E7%94%B1%E5%99%A8MTU%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5"><span class="toc-number">3.</span> <span class="toc-text">如果OSPF双方路由器MTU不一致，会发生什么情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E4%BD%95%E6%97%B6%E7%94%A8%E7%BB%84%E6%92%AD%EF%BC%8C%E4%BD%95%E6%97%B6%E7%94%A8%E5%8D%95%E6%92%AD%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">OSPF何时用组播，何时用单播？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OSPF%E9%82%BB%E5%B1%85%E8%A1%A8%E5%8F%91%E7%8E%B02-way%E6%98%AF%E5%90%A6%E6%AD%A3%E5%B8%B8"><span class="toc-number">5.</span> <span class="toc-text">OSPF邻居表发现2-way是否正常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E6%9D%A1LSA%E7%9A%84%E6%96%B0%E6%97%A7"><span class="toc-number">6.</span> <span class="toc-text">如何判断一条LSA的新旧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E4%B8%8D%E7%9B%B8%E9%82%BB%E7%9A%84%E4%B8%A4%E5%8F%B0OSPF%E8%B7%AF%E7%94%B1%E5%99%A8RID%E7%9B%B8%E5%90%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">如果不相邻的两台OSPF路由器RID相同会发生什么</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFPromethues"><span class="toc-number">1.</span> <span class="toc-text">什么是Promethues</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFpushgateway"><span class="toc-number">2.</span> <span class="toc-text">什么是pushgateway</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8pushgateway"><span class="toc-number">3.</span> <span class="toc-text">为什么使用pushgateway</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pushgateway%E4%B8%8Eblackbox%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C"><span class="toc-number">4.</span> <span class="toc-text">pushgateway与blackbox有什么不同</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8pushgateway%E7%9B%91%E6%8E%A7%E9%9C%80%E8%A6%81%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-number"></span> <span class="toc-text">使用pushgateway监控需要上传文件的接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">需求描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%9B%91%E6%8E%A7%E6%95%B0%E6%8D%AE"><span class="toc-number">2.</span> <span class="toc-text">获取监控数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0crontab%E4%BB%BB%E5%8A%A1"><span class="toc-number">3.</span> <span class="toc-text">添加crontab任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEprometheus-yml"><span class="toc-number">4.</span> <span class="toc-text">配置prometheus.yml</span></a></li></ol>
     </nav>
   </div>
 </aside>
 
 <main class="main" role="main">
   <div class="content">
-  <article id="post-OSPF-QA" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-pushgateway" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      OSPF经典问题汇总
+      使用pushgateway监控需要上传文件的应用接口
     </h1>
   
 
@@ -313,20 +312,20 @@
       <div class="article-meta">
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/2022/03/28/OSPF-QA/" class="article-date">
-	  <time datetime="2022-03-28T08:13:52.000Z" itemprop="datePublished">2022-03-28</time>
+	<a href="/2022/12/09/pushgateway/" class="article-date">
+	  <time datetime="2022-12-09T15:10:18.000Z" itemprop="datePublished">2022-12-09</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2RS/">路由交换RS</a>
+    <a class="article-category-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a>
   </span>
 
         
   <span class="article-tag">
     <i class="icon icon-tags"></i>
-	<a class="article-tag-link-link" href="/tags/network/" rel="tag">network</a>, <a class="article-tag-link-link" href="/tags/ospf/" rel="tag">ospf</a>, <a class="article-tag-link-link" href="/tags/routing/" rel="tag">routing</a>
+	<a class="article-tag-link-link" href="/tags/monitor/" rel="tag">monitor</a>, <a class="article-tag-link-link" href="/tags/prometheus/" rel="tag">prometheus</a>, <a class="article-tag-link-link" href="/tags/pushgateway/" rel="tag">pushgateway</a>
   </span>
 
 
@@ -339,49 +338,37 @@
 	</span>
 
 
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/03/28/OSPF-QA/#comments" class="article-comment-link">评论</a></span>
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/12/09/pushgateway/#comments" class="article-comment-link">评论</a></span>
         
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h2 id="OSPF采用分区域设计有什么好处？"><a href="#OSPF采用分区域设计有什么好处？" class="headerlink" title="OSPF采用分区域设计有什么好处？"></a>OSPF采用分区域设计有什么好处？</h2><ul>
-<li>可以在ABR做路由汇总，减少其它区域路由表条目，减轻路由器压力</li>
-<li>减少1，2类LSA泛洪</li>
-<li>减少路由收敛的范围，一个区域的问题不会影响其它区域</li>
-</ul>
-<h2 id="影响OSPF邻接的原因有哪些？"><a href="#影响OSPF邻接的原因有哪些？" class="headerlink" title="影响OSPF邻接的原因有哪些？"></a>影响OSPF邻接的原因有哪些？</h2><p>1、ROUTER ID不能相同；<br>2、HELLO时间必须一致；<br>3、DEAD时间必须一致；<br>4、区域ID必须相同；<br>5、认证必须相同；<br>6、STUB标志位必须相同（hello包中域外路由重分布能力位）；<br>7、MTU不匹配无法形成邻接关系<br>8、OSPF版本号不同（目前版本为2）；<br>9、当OSPF网络类型是MA时，要求掩码一定一致（两个邻居）。因为会出现DR和LSA-2，无法描述网段</p>
-<h2 id="如果OSPF双方路由器MTU不一致，会发生什么情况"><a href="#如果OSPF双方路由器MTU不一致，会发生什么情况" class="headerlink" title="如果OSPF双方路由器MTU不一致，会发生什么情况"></a>如果OSPF双方路由器MTU不一致，会发生什么情况</h2><p><strong>无法建立邻接关系</strong></p>
-<p>假设<strong>R1 MTU &lt; R2 MTU</strong></p>
-<p>首先，双方都可以进入exstart状态。然后双方开始单播发送第一个DBD，<br>此时<br>若R2的RID&gt;R1的RID</p>
-<p>对于R1：收到R2第一个DBD发现MTU比自己大，无法接受；所以维持发送第一个DBD的状态，即维持exstart状态</p>
-<p>对于R2: 正常收到R1的第一个DBD然后可以计算出自己是master，然后等待对方发送LSA摘要；但是发现R1只会发第一个DBD不发LSA摘要，（猜测：可能以为通讯有问题），于是维持发送第一个DBD，即维持exstart状态</p>
-<p>若R2的RID&lt;RI的RID</p>
-<p>对于R1：收到R2第一个DBD发现MTU比自己大，无法接受；所以维持发送第一个DBD的状态，即维持exstart状态</p>
-<p>对于R2: 正常收到R1的第一个DBD然后可以计算出对方是master而自己是slave，然后会发送LSA摘要，即进入exchange状态，但对方没有回复LSA摘要，所以会支持卡在exchange这个状态</p>
-<p>总结：<br>当双方mtu不一致时<br><strong>若DBD从的mtu小，则双方都卡在exstart</strong><br><strong>若DBD从的mtu大，则mtu大的进入exchange，mtu小的维持exstart</strong></p>
-<p><strong>总之，mtu小的一定卡在exstart，mtu大的有可能进入exchange（取决于是否是DBD从角色）</strong></p>
-<h2 id="OSPF何时用组播，何时用单播？"><a href="#OSPF何时用组播，何时用单播？" class="headerlink" title="OSPF何时用组播，何时用单播？"></a>OSPF何时用组播，何时用单播？</h2><ul>
-<li>HELLO包，不手动指定邻居的话都是发送到组播224.0.0.5</li>
-<li>DBD，只是两个路由器之间建邻居互传DB摘要，采用单播</li>
-<li>LSR，请求LSA，直接向DR请求，单播</li>
-<li>LSU<ul>
-<li>回复LSR时是单播</li>
-<li>触发更新时是组播<ul>
-<li>DR-Other 采用组播224.0.0.6告知DR&#x2F;BDR，由DR发送224.0.0.5告知其它所有路由器</li>
-<li>p2p类型网络都是发送到组播224.0.0.5</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>LSAck，组播224.0.05</li>
-</ul>
-<h2 id="OSPF邻居表发现2-way是否正常"><a href="#OSPF邻居表发现2-way是否正常" class="headerlink" title="OSPF邻居表发现2-way是否正常"></a>OSPF邻居表发现2-way是否正常</h2><p><strong>MA网络中正常</strong><br>在MA网络中，DR和BDR分别与DROther建立full邻接关系，DROther之间只是2-way关系</p>
-<h2 id="如何判断一条LSA的新旧"><a href="#如何判断一条LSA的新旧" class="headerlink" title="如何判断一条LSA的新旧"></a>如何判断一条LSA的新旧</h2><p>当一台路由器收到相同的LSA的多个实例时，将通过以下算法决定将哪一条放入数据库：</p>
-<p>1、比较LSA实例的序列号，大的优先<br>2、序列号相同，再比校验和，大的优先<br>3、校验和也相同，再比老化时间，如果有一条LSA拥有大小为最大生存时间（3600S）的老化时间，则最优<br>4、如果LSA的老化时间之间的差别多于15分钟，则老化时间小的优先<br>5、如果以上条件都比不出来，则认为这些LSA相同</p>
-<h2 id="如果不相邻的两台OSPF路由器RID相同会发生什么"><a href="#如果不相邻的两台OSPF路由器RID相同会发生什么" class="headerlink" title="如果不相邻的两台OSPF路由器RID相同会发生什么"></a>如果不相邻的两台OSPF路由器RID相同会发生什么</h2><p><strong>若这些路由器在同一区域</strong><br><img src="/2022/03/28/OSPF-QA/RID1.png" alt="OSPF RID1"><br>R1-R2-R3连接，且都属于同一区域<br>假设R2-R3先正常建立邻居后，R1配置R3的RID接入。此时R1与R2可以建立full邻接关系，R1会收到R2发来的较新的1类LSA，这里的1类LSA应该有两条<br>第一条ADV Router是R3<br>第二条ADV Router是R1</p>
-<p>这里R1会接受R2独有的路由（即ADV Router为R2且R3 没通告的路由，如lo 0的路由），收到R3路由发现和自己RID一样，会报RID dup的错，同时也会发送自己的最新的LSA。R3同理。<br><strong>最后结果就是R1,R3可以学到R2的loopback 路由但R1,R3互相的路由不稳定会翻动</strong></p>
-<p><strong>若这些路由器在不通区域</strong><br><img src="/2022/03/28/OSPF-QA/RID2.png" alt="OSPF RID2"><br>R1-R2-R3连接，R1-R2属于区域1，R2-R3属于区域0<br>假设R2-R3先正常建立邻居后，R1配置R3的RID接入。此时R1与R2可以建立full邻接关系。这里R2是ABR，R2会吧R3通告的1类LSA转为3类，在发给区域1的时候ADV Router字段会变为自己（即R2的RID），但不会重新处理5类LSA。所以对区域1的内部路由器R1来说，收到的R3路由会当做普通的三类LSA处理，并不知道这些OIA路由来自哪里；同理，R3也能学到R1的域内路由。<br><strong>最后结果就是R1,R3可以互相学到域内路由</strong></p>
+        <p>背景简介</p>
+<h2 id="什么是Promethues"><a href="#什么是Promethues" class="headerlink" title="什么是Promethues"></a>什么是Promethues</h2><p>prometheus是一套开源的监控系统，可以非常全面地监测硬件服务器、存储、网络、API等监控对象。prometheus主要采用pull模式，即，prometheus服务器通过http get请求来获取各个监控对象的监控数据。当然，各监控对象需要安装相应的node expoter客户端。此外，由于一些特殊的监控和自定义监控，prometheus也提供了blackbox expoter黑盒监控和pushgateway等更灵活的获取监控数据的方式。</p>
+<p><img src="/2022/12/09/pushgateway/prometheus_architecture.png" alt="PUSHGW TOPO"></p>
+<h2 id="什么是pushgateway"><a href="#什么是pushgateway" class="headerlink" title="什么是pushgateway"></a>什么是pushgateway</h2><p>pushgateway是prometheus监控系统中的一个可选组成部分。它类似于一个反向代理，Prometheus正常从pushgateway拉取监控数据，pushgateway的数据来自于用户自定义的metric，用户将这些metric push到pushgateway，即自定义脚本推送的数据。</p>
+<h2 id="为什么使用pushgateway"><a href="#为什么使用pushgateway" class="headerlink" title="为什么使用pushgateway"></a>为什么使用pushgateway</h2><p>通常pushgateway用于解决网络与Prometheus不通的区域充当代理的角色，也可以实现一些自定义的metrics。</p>
+<h2 id="pushgateway与blackbox有什么不同"><a href="#pushgateway与blackbox有什么不同" class="headerlink" title="pushgateway与blackbox有什么不同"></a>pushgateway与blackbox有什么不同</h2><p>blackbox expoter也是prometheus重要组成部分，blackbox exporter主要的功能是接口监控，内置了很多icmp，tcp，http等监控模板。black expoter可以满足大部分api监控需求，但一些复杂参数的api监控并没有办法实现。另外blackbox也能充当代理的角色，这点和pushgateway是相似的。但pushgateway内置api接口支持用户自定义的metrics，这是blackbox exporter做不到的。</p>
+<h1 id="使用pushgateway监控需要上传文件的接口"><a href="#使用pushgateway监控需要上传文件的接口" class="headerlink" title="使用pushgateway监控需要上传文件的接口"></a>使用pushgateway监控需要上传文件的接口</h1><h2 id="需求描述"><a href="#需求描述" class="headerlink" title="需求描述"></a>需求描述</h2><p>需求是需要对一批接口进行http状态码监控，这批接口要求指定header参数，另外必须上传图片</p>
+<p>根据需求首先想到的是blackbox，添加监控比较方便，有现成模板，但是由于接口需要上传文件，查了官网资料，没有发现blackbox exporter内模板支持post请求文件上传，于是只能使用pushgateway</p>
+<h2 id="获取监控数据"><a href="#获取监控数据" class="headerlink" title="获取监控数据"></a>获取监控数据</h2><p>我们需要把监控到的数据发给pushgateway，监控数据是post请求的状态码，使用以下脚本实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#定义api路径和请求头host参数</span><br><span class="line">path=(&#x27;https://192.168.0.1/some/path1&#x27; &#x27;https://192.168.0.1/some/path2&#x27; &#x27;https://192.168.0.1/some/path3&#x27;)</span><br><span class="line">host=(&#x27;host1&#x27; &#x27;host2&#x27; &#x27;host3&#x27; )</span><br><span class="line"></span><br><span class="line">for (( i = 0; i &lt; $&#123;#host[@]&#125;; ++i ))</span><br><span class="line">  do</span><br><span class="line">         #获取请求结果</span><br><span class="line">         result=`curl -s -w &#x27;%&#123;http_code&#125;\n&#x27; -o /dev/null  --data-binary @/opt/pic.jpg  --connect-timeout 5 -H &quot;host: $&#123;host[i]&#125;&quot; $&#123;path[i]&#125;`</span><br><span class="line">         if [ -z &quot;$result&quot; ]</span><br><span class="line">         then </span><br><span class="line">           value_code=0 </span><br><span class="line">         else</span><br><span class="line">           value_code=$(echo $result)  </span><br><span class="line">         #将结果发给pushgateway（本地）</span><br><span class="line">         echo &quot;somejob_http_code $&#123;value_code&#125;&quot; | curl --data-binary @- http://localhost:9091/metrics/job/somejob/instance/192.168.0.1/hostname/$&#123;host[i]&#125;</span><br><span class="line">         fi</span><br><span class="line">         echo  $&#123;host[i]&#125;&quot;===&quot;$&#123;path[i]&#125;&quot;===&quot;$value_code</span><br><span class="line">  done</span><br></pre></td></tr></table></figure>
+
+<p>其中，</p>
+<p>上传文件的路径需要以绝对路径引用，因为这个脚本将来是要被crontab执行的，工作目录并不是脚本所在目录</p>
+<p>另外，可以先把push数据那句话注释掉验证请求结果</p>
+<h2 id="添加crontab任务"><a href="#添加crontab任务" class="headerlink" title="添加crontab任务"></a>添加crontab任务</h2><p>无误后，使用crontab定时45s执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#打开crontab配置文件</span><br><span class="line">sudo crontab -e</span><br><span class="line"></span><br><span class="line">#添加定时任务</span><br><span class="line">* * * * * sleep 45; bash /opt/shell.sh &gt; /dev/null 2&gt;&amp;1</span><br><span class="line"></span><br><span class="line">#验证定时任务是否成功添加</span><br><span class="line">sudo crontab -l</span><br></pre></td></tr></table></figure>
+
+<p>定时任务配置完成后，pushgateway就会周期性收到监控数据并更新了，如果prometheus 已经有pushgateway的job的话，就可以查到metrics了</p>
+<h2 id="配置prometheus-yml"><a href="#配置prometheus-yml" class="headerlink" title="配置prometheus.yml"></a>配置prometheus.yml</h2><p>如果prometheus没有集成pushgateway，则需要在prometheus.yml添加如下job并重载</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &#x27;pushgateway&#x27;</span><br><span class="line">  scrape_interval: 45s</span><br><span class="line">  honor_labels: true</span><br><span class="line">  static_configs:</span><br><span class="line">    - targets: [&#x27;1.1.1.1:9091&#x27;]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#prometheus热重载</span><br><span class="line">curl -X POST http://127.0.0.1:9090/-/reload</span><br></pre></td></tr></table></figure>
+
+<p>重载后可在prometheus查询到新的metrics</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">somejob_http_code&#123;&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -391,7 +378,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://arclogicr.github.io/2022/03/28/OSPF-QA/" title="OSPF经典问题汇总" target="_blank" rel="external">https://arclogicr.github.io/2022/03/28/OSPF-QA/</a>
+      <a href="https://arclogicr.github.io/2022/12/09/pushgateway/" title="使用pushgateway监控需要上传文件的应用接口" target="_blank" rel="external">https://arclogicr.github.io/2022/12/09/pushgateway/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -438,12 +425,12 @@
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="/2022/04/02/bgp-notes/" title="BGP学习笔记"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="/2023/01/04/kvmq1/" title="kvm如何禁止虚拟机之间通信"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
     <li class="next">
-      <a href="/2022/03/27/ospf-notes/" title="OSPF学习笔记"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="/2022/04/17/ipv6/" title="IPv6地址"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
