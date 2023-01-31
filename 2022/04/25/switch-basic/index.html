@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>交换基础1 | Arclogic的博客</title>
+  <meta name="description" content="交换设备中继器Repeater中继器是信号放大设备，用于远距离传输时信号的重放。 集线器HUB早期狭义上的HUB是物理层设备，这种HUB仅仅将各个交换端口用电缆连接起来，使用CSMA&#x2F;CD来控制收发信号。整个HUB是一个冲突域，HUB上的任何终端可以侦听到全部的其它终端信号，没有安全性。 现在我们广义上的HUB指的是非网管交换机，即傻瓜交换机，它仅具有二层转发能力。 冲突域在同一个网络上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="交换基础1">
+<meta property="og:url" content="https://arclogicr.github.io/2022/04/25/switch-basic/index.html">
+<meta property="og:site_name" content="Arclogic&#39;s Blog">
+<meta property="og:description" content="交换设备中继器Repeater中继器是信号放大设备，用于远距离传输时信号的重放。 集线器HUB早期狭义上的HUB是物理层设备，这种HUB仅仅将各个交换端口用电缆连接起来，使用CSMA&#x2F;CD来控制收发信号。整个HUB是一个冲突域，HUB上的任何终端可以侦听到全部的其它终端信号，没有安全性。 现在我们广义上的HUB指的是非网管交换机，即傻瓜交换机，它仅具有二层转发能力。 冲突域在同一个网络上">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/hub_bridge.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/ethernetii.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/802.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/cdp.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/lldp.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/isl.jpg">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/dot1q.jpg">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/dtp.png">
+<meta property="og:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/vtp.png">
+<meta property="article:published_time" content="2022-04-25T13:02:48.000Z">
+<meta property="article:modified_time" content="2023-01-31T10:17:53.854Z">
+<meta property="article:author" content="Arclogic">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="switching">
+<meta property="article:tag" content="vlan">
+<meta property="article:tag" content="vtp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://arclogicr.github.io/2022/04/25/switch-basic/hub_bridge.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://arclogicr.github.io/2022/04/25/switch-basic/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Arclogic&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/arclogicr" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Arclogic</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">网络工程师</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>记录工作和生活里一些在意的东西</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/01/16/openwrt-ts/" class="title">虚拟机部署OpenWrt外部无法访问问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-01-16T14:10:58.000Z" itemprop="datePublished">2023-01-16</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/01/14/openwrt-ply/" class="title">使用VirtualBox部署OpenWrt充当旁路由</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-01-14T13:17:08.000Z" itemprop="datePublished">2023-01-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%96%87%E6%A1%A3%E7%BF%BB%E8%AF%91/">文档翻译</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/01/12/openwrt-fw1/" class="title">OpenWrt防火墙翻译</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-01-12T10:34:55.000Z" itemprop="datePublished">2023-01-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/01/04/kvmq1/" class="title">kvm如何禁止虚拟机之间通信</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-01-04T07:37:05.000Z" itemprop="datePublished">2023-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/09/pushgateway/" class="title">使用pushgateway监控需要上传文件的应用接口</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-09T15:10:18.000Z" itemprop="datePublished">2022-12-09</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%96%87%E6%A1%A3%E7%BF%BB%E8%AF%91/">文档翻译</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">疑难杂症</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2RS/">路由交换RS</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/bgp/" rel="tag">bgp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewall/" rel="tag">firewall</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/" rel="tag">kvm</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/monitor/" rel="tag">monitor</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/" rel="tag">network</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/" rel="tag">openwrt</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ospf/" rel="tag">ospf</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/prometheus/" rel="tag">prometheus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pushgateway/" rel="tag">pushgateway</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/routing/" rel="tag">routing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/switching/" rel="tag">switching</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/" rel="tag">tcp&#x2F;ip</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/translation/" rel="tag">translation</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/" rel="tag">virtualbox</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vlan/" rel="tag">vlan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vtp/" rel="tag">vtp</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</aside>
+
+  
+  
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E8%AE%BE%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">交换设备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E7%BB%A7%E5%99%A8Repeater"><span class="toc-number">1.1.</span> <span class="toc-text">中继器Repeater</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BA%BF%E5%99%A8HUB"><span class="toc-number">1.2.</span> <span class="toc-text">集线器HUB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%B2%E7%AA%81%E5%9F%9F"><span class="toc-number">1.2.1.</span> <span class="toc-text">冲突域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%BF%E6%92%AD%E5%9F%9F"><span class="toc-number">1.2.2.</span> <span class="toc-text">广播域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CSMA-x2F-CD"><span class="toc-number">1.2.3.</span> <span class="toc-text">CSMA&#x2F;CD</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E6%A1%A5Bridge"><span class="toc-number">1.3.</span> <span class="toc-text">网桥Bridge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9C%BASwitch"><span class="toc-number">1.4.</span> <span class="toc-text">交换机Switch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.4.1.</span> <span class="toc-text">交换机工作原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%AB%AF%E5%8F%A3%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.4.2.</span> <span class="toc-text">交换机端口模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#access"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">access</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#trunk"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">trunk</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#private-vlan"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">private-vlan</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dot1q-tunnel"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">dot1q tunnel</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%AB%AF%E5%8F%A3%E6%A8%A1%E5%BC%8F%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.3.</span> <span class="toc-text">交换机端口模式配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E7%BD%91%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">以太网数据链路层简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82%E7%9A%84%E5%AD%90%E5%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text">数据链路层的子层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#LLC%E5%AD%90%E5%B1%82"><span class="toc-number">2.1.1.</span> <span class="toc-text">LLC子层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MAC%E5%AD%90%E5%B1%82"><span class="toc-number">2.1.2.</span> <span class="toc-text">MAC子层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E7%BD%91%E4%BA%8C%E5%B1%82%E5%B8%A7"><span class="toc-number">2.2.</span> <span class="toc-text">以太网二层帧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ethernet-II"><span class="toc-number">2.2.1.</span> <span class="toc-text">Ethernet II</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IEEE802-3"><span class="toc-number">2.2.2.</span> <span class="toc-text">IEEE802.3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CDP"><span class="toc-number">2.3.</span> <span class="toc-text">CDP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LLDP"><span class="toc-number">2.4.</span> <span class="toc-text">LLDP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#VLAN"><span class="toc-number">3.</span> <span class="toc-text">VLAN</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VLAN%E5%B0%81%E8%A3%85%E5%8D%8F%E8%AE%AE"><span class="toc-number">3.1.</span> <span class="toc-text">VLAN封装协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ISL"><span class="toc-number">3.1.1.</span> <span class="toc-text">ISL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IEEE802-1Q"><span class="toc-number">3.1.2.</span> <span class="toc-text">IEEE802.1Q</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%BE%81VLAN"><span class="toc-number">3.1.2.1.</span> <span class="toc-text">本征VLAN</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QinQ"><span class="toc-number">3.1.2.2.</span> <span class="toc-text">QinQ</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vlan%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="toc-number">3.2.</span> <span class="toc-text">vlan相关命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DTP"><span class="toc-number">3.3.</span> <span class="toc-text">DTP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#On%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.3.1.</span> <span class="toc-text">On模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Desirable%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.3.2.</span> <span class="toc-text">Desirable模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.3.3.</span> <span class="toc-text">Auto模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DTP%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.4.</span> <span class="toc-text">DTP配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VTP"><span class="toc-number">3.4.</span> <span class="toc-text">VTP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#VTP%E5%9F%9F"><span class="toc-number">3.4.1.</span> <span class="toc-text">VTP域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VTP%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.2.</span> <span class="toc-text">VTP工作模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#server%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.2.1.</span> <span class="toc-text">server模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#client%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.2.2.</span> <span class="toc-text">client模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#transparent%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.2.3.</span> <span class="toc-text">transparent模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VTP%E4%BF%AE%E8%AE%A2%E7%89%88%E6%9C%AC%E5%8F%B7"><span class="toc-number">3.4.3.</span> <span class="toc-text">VTP修订版本号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VTPv3"><span class="toc-number">3.4.4.</span> <span class="toc-text">VTPv3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VTP-Prunning"><span class="toc-number">3.4.5.</span> <span class="toc-text">VTP Prunning</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VTP%E9%85%8D%E7%BD%AE"><span class="toc-number">3.4.6.</span> <span class="toc-text">VTP配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PVLAN"><span class="toc-number">3.5.</span> <span class="toc-text">PVLAN</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PVLAN%E5%88%86%E7%B1%BB"><span class="toc-number">3.5.1.</span> <span class="toc-text">PVLAN分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PVLAN%E7%AB%AF%E5%8F%A3%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.5.2.</span> <span class="toc-text">PVLAN端口类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PVLANSVI%E4%B8%89%E5%B1%82%E6%98%A0%E5%B0%84"><span class="toc-number">3.5.3.</span> <span class="toc-text">PVLANSVI三层映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PVLAN%E9%85%8D%E7%BD%AE"><span class="toc-number">3.5.4.</span> <span class="toc-text">PVLAN配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">3.6.</span> <span class="toc-text"></span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-switch-basic" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      交换基础1
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2022/04/25/switch-basic/" class="article-date">
+	  <time datetime="2022-04-25T13:02:48.000Z" itemprop="datePublished">2022-04-25</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2RS/">路由交换RS</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/network/" rel="tag">network</a>, <a class="article-tag-link-link" href="/tags/switching/" rel="tag">switching</a>, <a class="article-tag-link-link" href="/tags/vlan/" rel="tag">vlan</a>, <a class="article-tag-link-link" href="/tags/vtp/" rel="tag">vtp</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/04/25/switch-basic/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="交换设备"><a href="#交换设备" class="headerlink" title="交换设备"></a>交换设备</h1><h2 id="中继器Repeater"><a href="#中继器Repeater" class="headerlink" title="中继器Repeater"></a>中继器Repeater</h2><p>中继器是信号放大设备，用于远距离传输时信号的重放。</p>
+<h2 id="集线器HUB"><a href="#集线器HUB" class="headerlink" title="集线器HUB"></a>集线器HUB</h2><p>早期狭义上的HUB是物理层设备，这种HUB仅仅将各个交换端口用电缆连接起来，使用CSMA&#x2F;CD来控制收发信号。整个HUB是一个冲突域，HUB上的任何终端可以侦听到全部的其它终端信号，没有安全性。</p>
+<p>现在我们广义上的HUB指的是非网管交换机，即傻瓜交换机，它仅具有二层转发能力。</p>
+<h3 id="冲突域"><a href="#冲突域" class="headerlink" title="冲突域"></a>冲突域</h3><p>在同一个网络上两个设备同时进行传输则会产生冲突；在网络内部信号传输所产生与发生冲突的这样一个区域称为冲突域。</p>
+<h3 id="广播域"><a href="#广播域" class="headerlink" title="广播域"></a>广播域</h3><p>一个广播分组能被泛洪传播的范围叫广播域。</p>
+<h3 id="CSMA-x2F-CD"><a href="#CSMA-x2F-CD" class="headerlink" title="CSMA&#x2F;CD"></a>CSMA&#x2F;CD</h3><p>CSMA&#x2F;CD是带冲突检测的多路载波监听。简单来说，其原理就是持续侦听信道是否空闲，空闲时才发送数据；如果遇到同时发送，即发生冲突，会有一系列回退机制，等待重发。这种技术用于早期标准以太网（10Mbps）和快速以太网（100Mbps）的半双工模式。</p>
+<h2 id="网桥Bridge"><a href="#网桥Bridge" class="headerlink" title="网桥Bridge"></a>网桥Bridge</h2><p>网桥是阻断冲突域的设备。假设在两个HUB之间由一个网桥连接，网桥会记录这两个HUB上接入的所有终端的链路层地址，这样当HUB A访问HUB A上的终端时，信号就可以不用被发送到HUB B；仅当HUB A 终端访问 HUB B上的终端时才会发送到HUB B。因此，网桥一定程度上可以将冲突域减半。</p>
+<p><img src="/2022/04/25/switch-basic/hub_bridge.png" alt="SWITCH HUB_BRIDGE"></p>
+<h2 id="交换机Switch"><a href="#交换机Switch" class="headerlink" title="交换机Switch"></a>交换机Switch</h2><p>和网桥类似，交换机也是阻断冲突域的设备，一个交换机端口就是一个冲突域。现代交换机基本都采用存储-转发的方式进行转发，通过ASIC硬件可以将转发速度达到线速（100M&#x2F;1G&#x2F;10G&#x2F;25G&#x2F;40G&#x2F;100G）。一个衡量交换机性能的重要指标是吞吐量&#x2F;背板带宽，即交换机所有端口满载时消耗的带宽总和。</p>
+<h3 id="交换机工作原理"><a href="#交换机工作原理" class="headerlink" title="交换机工作原理"></a>交换机工作原理</h3><p>交换机工作原理可以总结为三点</p>
+<ul>
+<li><p>学习mac地址</p>
+</li>
+<li><p>泛洪广播、组播和未知单播</p>
+</li>
+<li><p>点到点转发已知单播</p>
+</li>
+</ul>
+<p>考虑两台同一局域网内的终端A和B首次ping通信过程：</p>
+<p>终端A欲发送icmp包给B，但是无法填充目的mac（即B的mac），于是发送arp广播，问谁是B；</p>
+<p><strong>此时交换机收到广播包，首先学习A的mac地址，然后泛洪该广播；</strong></p>
+<p>B收到arp广播后，填充自己的arp表，单播回复我是B；</p>
+<p><strong>此时交换机收到已知单播包（已习得A的mac），首先学习B的MAC地址，然后点到点转发该arp回复包；</strong></p>
+<p>A收到B的arp回复，填充自己的arp表，发送icmp包给B；</p>
+<p><strong>交换机收到已知单播，点到点转发给B；</strong></p>
+<p>B收到icmp echo，回复icmp reply；</p>
+<p><strong>交换机收到已知单播，点到点转发给A；</strong></p>
+<p>A收到icmp回复，通信结束。</p>
+<h3 id="交换机端口模式"><a href="#交换机端口模式" class="headerlink" title="交换机端口模式"></a>交换机端口模式</h3><p>交换机端口模式是交换机在数据转发时重要的依据，不同的端口模式会影响该接口的二层封装。</p>
+<h4 id="access"><a href="#access" class="headerlink" title="access"></a>access</h4><p>access端口是用来接入终端的端口模式，思科的access口只能属于一个vlan，access口收发的流量不带ISL或802.1Q标签。</p>
+<h4 id="trunk"><a href="#trunk" class="headerlink" title="trunk"></a>trunk</h4><p>trunk端口主要用于网络设备间的连接，如交换机-交换机，路由器-交换机等。turnk端口可以传输多个vlan的流量，通过ISL或802.1Q封装来区分他们。配置trunk端口前，需要配置trunk端口的封装方式，另外trunk模式端口的DTP模式自动为on。</p>
+<h4 id="private-vlan"><a href="#private-vlan" class="headerlink" title="private-vlan"></a>private-vlan</h4><p>private-vlan是上述所讲的辅vlan端口，用于VLAN内的VLAN划分。</p>
+<h4 id="dot1q-tunnel"><a href="#dot1q-tunnel" class="headerlink" title="dot1q tunnel"></a>dot1q tunnel</h4><p>dot1q tunnel是qinq模式，可以封装外层802.1Q标签，可更精确的区分业务。</p>
+<h3 id="交换机端口模式配置"><a href="#交换机端口模式配置" class="headerlink" title="交换机端口模式配置"></a>交换机端口模式配置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">###交换机端口模式配置</span><br><span class="line">switch(config-if)#switchport mode [access/trunk/dot1q-tunnel/private-vlan/dynamic]</span><br></pre></td></tr></table></figure>
+
+<h1 id="以太网数据链路层简介"><a href="#以太网数据链路层简介" class="headerlink" title="以太网数据链路层简介"></a>以太网数据链路层简介</h1><h2 id="数据链路层的子层"><a href="#数据链路层的子层" class="headerlink" title="数据链路层的子层"></a>数据链路层的子层</h2><p>数据链路层，即二层，分为MAC子层和LLC子层。IEEE802.2定义了LLC子层，IEEE802.3定义了MAC子层，LLC子层在MAC子层之上。</p>
+<h3 id="LLC子层"><a href="#LLC子层" class="headerlink" title="LLC子层"></a>LLC子层</h3><p>以太网 LLC 子层处理上层与下层之间的通信。 这通常是在网络软件和设备硬件之间进行的。 LLC 子层获取网络协议数据（通常是 IPv4 数据包）并加入控制信息，帮助将数据包传送到目的节点。 LLC 用于与应用层的上层进行通信，并将数据包转换到下层以便传输。</p>
+<h3 id="MAC子层"><a href="#MAC子层" class="headerlink" title="MAC子层"></a>MAC子层</h3><p>MAC 构成数据链路层的较低子层，负责链路层面的寻址。 MAC 由硬件实现，通常在计算机网卡中实施。IEEE 802.3 标准指定了这些细节。</p>
+<h2 id="以太网二层帧"><a href="#以太网二层帧" class="headerlink" title="以太网二层帧"></a>以太网二层帧</h2><p>以太网常见的二层mac帧有两种，第一种是Ethernet II，是由Xerox与DEC、Intel（DIX）在1982年制定，后来被定义在RFC1042；另一种是IEEE802.3，由IEEE802委员会在1985年定义，后被写进RFC1042。</p>
+<h3 id="Ethernet-II"><a href="#Ethernet-II" class="headerlink" title="Ethernet II"></a>Ethernet II</h3><p>Ehernet II二层帧通常被广泛用在终端数据通信，上层协议支持IP,ARP等。帧结构如下</p>
+<p><img src="/2022/04/25/switch-basic/ethernetii.png" alt="SWITCH ETHERNETII"></p>
+<p>其中类型字段表示了上层协议类型，为大于1500的值，可通过类型字段大于1500分辨出这是EthernetII帧格式，如果小于1500则是IEEE802.3帧格式</p>
+<h3 id="IEEE802-3"><a href="#IEEE802-3" class="headerlink" title="IEEE802.3"></a>IEEE802.3</h3><p>IEEE802.3二层帧通常用在网络设备间的通信，如STP，CDP等。帧结构如下</p>
+<p><img src="/2022/04/25/switch-basic/802.png" alt="SWITCH 802"></p>
+<p>其中长度字段表示了帧长度，为小于1500的值，可通过类型字段小于1500分辨出这是IEEE802.3帧格式，如果大于1500则是EthernetII帧格式</p>
+<h2 id="CDP"><a href="#CDP" class="headerlink" title="CDP"></a>CDP</h2><p>CDP，Cisco Discovery Protocol，思科发现协议，是思科私有的邻居发现协议，所有的思科产品包括交换机、路由器、AC、服务器等都支持CDP。CDP工作在数据链路层，要求物理介质支持SNAP(SubNetwork Acess Protocol)协议，即必须使用IEEE802.3的二层帧，通过LLC子层来传递上层协议类型。CDP默认每60s向直连邻居发送CDP消息，如果180s收不到邻居的CDP消息则清除记录。</p>
+<p>CDP报文发向组播mac 0100-0CCC-CCCC，事实上思科的一些二层私有协议都使用此组mac，如DTP,PAgP,VTP等。</p>
+<p>CDP消息包含以下信息：</p>
+<ul>
+<li><p>设备标识符</p>
+</li>
+<li><p>地址</p>
+</li>
+<li><p>互相连接的物理端口号</p>
+</li>
+<li><p>设备类型</p>
+</li>
+<li><p>设备型号</p>
+</li>
+</ul>
+<p>CDP报文抓包如下：</p>
+<p><img src="/2022/04/25/switch-basic/cdp.png" alt="SWITCH CDP"></p>
+<p>启用cdp命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">switch(config)#cdp run</span><br></pre></td></tr></table></figure>
+
+<h2 id="LLDP"><a href="#LLDP" class="headerlink" title="LLDP"></a>LLDP</h2><p>LLDP，Link Layer Discovery Protocol，链路层发现协议，是一个公共的设备发现协议。由于网络设备种类日益繁多且拓扑复杂，LLDP可以跨设备厂商交换设备和拓扑信息。绝大多数设备都支持lldp，甚至windows10也有lldp功能。LLDP既支持SNAP格式封装也支持EthernetII封装，LLDP报文发向组mac 0180-C200-000E。LLDP主要完成以下任务：</p>
+<ul>
+<li><p>建立并护本地MIB</p>
+</li>
+<li><p>从本地MIB提取信息，封装至LLDPDU（LLDP数据单元）发送给邻居。有两种方式会触发更新，定时自动触发和状态变化触发</p>
+</li>
+<li><p>接受远程设备MIB并维护远程MIB</p>
+</li>
+<li><p>当MIB信息变化时发出通告</p>
+</li>
+</ul>
+<p>LLDP工作模式有以下四种：</p>
+<ul>
+<li><p>TXRX：收发LLDPDU</p>
+</li>
+<li><p>TX：只发不收</p>
+</li>
+<li><p>RX：只收不发</p>
+</li>
+<li><p>DISABLED：不发不收（lldp功能未使能）</p>
+</li>
+</ul>
+<p>LLDP EthernetII封装抓包如下：</p>
+<p><img src="/2022/04/25/switch-basic/lldp.png" alt="SWITCH LLDP"></p>
+<p>LLDP默认每30s发送LLDPDU，超120s每收到则清除条目。LLDPDU包含了设备的主要能力、管理地址、设备类型、型号和接口标识等。每个LLDP可携带共28种TLV（类型，长度，值），其中Chasis ID，TTL，Port和End是四个必须携带的类型。</p>
+<p>启用lldp命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">switch(config)#lldp run</span><br></pre></td></tr></table></figure>
+
+<h1 id="VLAN"><a href="#VLAN" class="headerlink" title="VLAN"></a>VLAN</h1><p>VLAN，virtual local area network，虚拟局域网。是一种将局域网划分为多个逻辑局域网的技术。每个LAN是一个广播域，，每个被划分的逻辑局域网即vlan也是一个广播域。关于以太网交换的技术大部分是和VLAN有关的。</p>
+<p>VLAN技术实现了多业务组网隔离的需求。比如，在某公司某楼层，有市场部、财务部和技术部，这些部门的办公终端要求隔离。在没有vlan技术的情况下，不管每个部门多少人，我们都需要至少使用三台交换机部署三个LAN来满足需求，造成交换机端口资源浪费。在有vlan的情况下，只需根据楼层总人数规划交换机数量，不同部门的人划分到不同vlan即可。</p>
+<p>相比传统LAN，使用VLAN的优势如下：</p>
+<ul>
+<li><p>有效利用交换机资源</p>
+</li>
+<li><p>提高了网络安全性</p>
+</li>
+<li><p>隔离故障域，二层故障域都比加大（stp故障可能影响一个lan，划分VLAN可以减小故障域）</p>
+</li>
+</ul>
+<h2 id="VLAN封装协议"><a href="#VLAN封装协议" class="headerlink" title="VLAN封装协议"></a>VLAN封装协议</h2><p>VLAN可以跨交换机配置，不同VLAN 流量跨交换机通信时，通过VLAN号区分不同VLAN流量，即，将原有的二层帧使用特定的方式将vid信息封装进去。VLAN号有两种封装协议ISL和IEEE802.1Q，其中VLAN1002-1005是交换机保留vlan，1006-4094是扩展VLAN。交换机之间承载多VLAN的链路也称trunk（中继）链路。</p>
+<h3 id="ISL"><a href="#ISL" class="headerlink" title="ISL"></a>ISL</h3><p>ISL，Inter-Swith link，跨交换机链路，是思科私有二层封装协议。封装结构如下：</p>
+<p><img src="/2022/04/25/switch-basic/isl.jpg" alt="SWITCH ISL"></p>
+<p>ISL使用26字节头和4字节尾将原有二层帧封装，其中VID字段有15bit实际只用到10bit即1024，所以使用ISL封装的VLAN号最多只有1024个。</p>
+<h3 id="IEEE802-1Q"><a href="#IEEE802-1Q" class="headerlink" title="IEEE802.1Q"></a>IEEE802.1Q</h3><p>IEEE802.1Q是IEEE对二层的封装规范，是业界标准。802.1q封装结构如下：</p>
+<p><img src="/2022/04/25/switch-basic/dot1q.jpg" alt="SWITCH DOT1Q"></p>
+<p>802.1Q在二层帧中间插入了4个字节，其中VID字段有12bit，即使用802.1Q封装的VLAN号最多可以有4096个。</p>
+<p>相比较与ISL，IEEE802.1Q封装的字节更少，占用带宽较少；但是ISL封装不改变原有帧结构，处理速度会略占优势。总体来说，ISL尽仅思科设备上可用，目前基本都会使用IEEE802.1Q封装协议。可以用以下命令配置交换机trunk封装协议：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">switch(config-if)#switchport trunk encapsulation [isl/dot1q] </span><br></pre></td></tr></table></figure>
+
+<h4 id="本征VLAN"><a href="#本征VLAN" class="headerlink" title="本征VLAN"></a>本征VLAN</h4><p>802.1Q将不打VLAN标签的vlan成为native vlan，即本征vlan，没有vlan标签的流量会被转发至本征vlan。默认本征vlan为vlan 1，每台交换机本征vlan只能有一个。可以通过一下命令修改本征vlan：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">switch(config-if)#switchport trunk native vlan 2</span><br></pre></td></tr></table></figure>
+
+<h4 id="QinQ"><a href="#QinQ" class="headerlink" title="QinQ"></a>QinQ</h4><p>QinQ，即802.1Q in 802.1Q，是一种隧道技术，相当于二层帧插入了二个802.1Q标签。用于区分不同的流量。例如，在广域网传输时，运营商根据外层标签指派路径，帧被送达后，局域网交换机根据内层标签区分vlan。</p>
+<h2 id="vlan相关命令"><a href="#vlan相关命令" class="headerlink" title="vlan相关命令"></a>vlan相关命令</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#定义vlan</span><br><span class="line">switch(config)# vlan 888</span><br><span class="line"></span><br><span class="line">#划分vlan</span><br><span class="line">switch(config-if)# switchport</span><br><span class="line">switch(config-if)# switchport mode access</span><br><span class="line">switch(config-if)# switchport access vlan 888</span><br><span class="line"></span><br><span class="line">#验证vlan</span><br><span class="line">switch# show vlan brief</span><br></pre></td></tr></table></figure>
+
+<h2 id="DTP"><a href="#DTP" class="headerlink" title="DTP"></a>DTP</h2><p>DTP，Dynamic Trunk Protocol，动态trunk协议，是思科私有的用于协商trunk链路的协议。DTP也必须使用IEEE802.3以太网封装，使用LLC子层传递上层协议类型。DTP用于思科设备协商交换机端口是否为trunk模式。DTP携带本地的trunk信息，包括DTP模式和封装方式。DTP抓包如下：<br><img src="/2022/04/25/switch-basic/dtp.png" alt="SWITCH DTP"></p>
+<p>DTP工作有三种种模式，on，Desireable，Auto。</p>
+<h3 id="On模式"><a href="#On模式" class="headerlink" title="On模式"></a>On模式</h3><p>若某端口处于On模式。则该端口不协商，直接以本地配置开启turnk模式。处于On模式的端口会持续发送DTP消息。</p>
+<h3 id="Desirable模式"><a href="#Desirable模式" class="headerlink" title="Desirable模式"></a>Desirable模式</h3><p>若某端口处于Desirable模式下，该端口主动发送DTP消息，同时也监听DTP消息，接受到有效DTP后会根据消息内容配置端口trunk。</p>
+<h3 id="Auto模式"><a href="#Auto模式" class="headerlink" title="Auto模式"></a>Auto模式</h3><p>若某端口处于Auto模式下，该端口不主动发送DTP消息，但收到有效DTP消息会成为turnk端口。交换机默认处于DTP Auto模式下。</p>
+<h3 id="DTP配置"><a href="#DTP配置" class="headerlink" title="DTP配置"></a>DTP配置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">###DTP配置</span><br><span class="line">####DTP on 模式</span><br><span class="line">switch(config-if)# switchport mode trunk</span><br><span class="line"></span><br><span class="line">####DTP 其它模式</span><br><span class="line">switch(config-if)# switchport mode dynamic [auto/desirable]</span><br></pre></td></tr></table></figure>
+
+<h2 id="VTP"><a href="#VTP" class="headerlink" title="VTP"></a>VTP</h2><p>VTP，VLAN Trunk Protocol，VLAN中继协议。类似于CDP，VTP也是一个目的mac为组播0100-0CCC-CCCC的二层消息协议，也必须使用802.3以太网封装。最新版本为VTPv3。</p>
+<h3 id="VTP域"><a href="#VTP域" class="headerlink" title="VTP域"></a>VTP域</h3><p>若要使用VTP，必须先指定VTP域名，一台交换机只能加入一个VTP域。所有具有相同VTP域名的交换机成为一个VTP域，并在VTP域内交换VTP消息。没有更新的情况下，vtp消息每5min更新一次，vtp消息主要携带本地vlan信息（v3版本增加mst信息），抓包如下：</p>
+<p><img src="/2022/04/25/switch-basic/vtp.png" alt="SWITCH VTP"></p>
+<h3 id="VTP工作模式"><a href="#VTP工作模式" class="headerlink" title="VTP工作模式"></a>VTP工作模式</h3><h4 id="server模式"><a href="#server模式" class="headerlink" title="server模式"></a>server模式</h4><p>vtp配置为server模式后，管理员可以编辑本地vlan，包括删除，增加，修改名字。Server模式是交换机默认的vtp模式。收到更新的vtp消息会同步自己的vlan。</p>
+<h4 id="client模式"><a href="#client模式" class="headerlink" title="client模式"></a>client模式</h4><p>vtp配置为client模式后，本地vlan信息不可更改，收到更新的vtp消息会同步自己的vlan。</p>
+<h4 id="transparent模式"><a href="#transparent模式" class="headerlink" title="transparent模式"></a>transparent模式</h4><p>vtp配置为transparent模式后，可以对本地VLAN进行修改，并透传vtp，但不使用该vtp信息，也不发送vtp信息。</p>
+<h3 id="VTP修订版本号"><a href="#VTP修订版本号" class="headerlink" title="VTP修订版本号"></a>VTP修订版本号</h3><p>VTP修订版本号是指该VTP域内vlan被编辑的次数。一般修改VTP域名后，修订版本号置0，以后每次修改一次vlan信息（v3版本增加mst）修订号+1。<u><strong>所以判断VTP消息新旧的唯一依据是修订号，和工作模式无关</strong></u>。</p>
+<h3 id="VTPv3"><a href="#VTPv3" class="headerlink" title="VTPv3"></a>VTPv3</h3><p>VTPv3在vtp消息种增加了多实例生成树mst的配置信息，除了同步VLAN信息，还可以同步mst信息。另外，开启VTPv3后可以设置VTP密码，防止VTP配置被随意改动。</p>
+<h3 id="VTP-Prunning"><a href="#VTP-Prunning" class="headerlink" title="VTP Prunning"></a>VTP Prunning</h3><p>VTP Prunning，VTP裁剪是一个二层网络优化的功能。VTP裁剪可以减少trunk端口不必要的vlan通信，减少广播数量。比如某交换机只有VLAN 10，那么VLAN 20等其它VLAN信息就没有必要发给他。</p>
+<h3 id="VTP配置"><a href="#VTP配置" class="headerlink" title="VTP配置"></a>VTP配置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">###vtp v3 配置</span><br><span class="line">switch(config)# vtp domain somedomain</span><br><span class="line">switch(config)# vtp version 3</span><br><span class="line">switch(config)# vtp mode [server/client/transparent] mst</span><br><span class="line">switch(config)# vtp mode [server/client/transparent] vlan</span><br><span class="line">switch(config)# vtp password somepassword hidden</span><br><span class="line">switch(config)# vtp prunning</span><br></pre></td></tr></table></figure>
+
+<h2 id="PVLAN"><a href="#PVLAN" class="headerlink" title="PVLAN"></a>PVLAN</h2><p>PVLAN，Private VLAN，私有VLAN。PVLAN将一个VLAN内部广播域继续进行划分，实现更精细的交换端口隔离，相当于在VLAN内创建VLAN。配置PVLAN时，VTP必须为transparent模式。思科给出的两个应用场景是：</p>
+<ul>
+<li><p>运营商可以给不同的用户分配同一个子网IP，通过PVLAN来隔离它们</p>
+</li>
+<li><p>在某些安全要求下，可以提供二层隔离</p>
+</li>
+</ul>
+<h3 id="PVLAN分类"><a href="#PVLAN分类" class="headerlink" title="PVLAN分类"></a>PVLAN分类</h3><p>PVLAN分类如下</p>
+<ul>
+<li><p>Primary Vlan 主VLAN</p>
+</li>
+<li><p>Secondary Vlans 辅VLAN，辅VLAN默认不能与外界VLAN通信</p>
+<ul>
+<li><p>Isolated Vlan 隔离VLAN，一个主VLAN内只能由一个隔离VLAN</p>
+</li>
+<li><p>Community VLANs 联盟VLAN，一个主VLAN可以有多个联盟VLAN</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="PVLAN端口类型"><a href="#PVLAN端口类型" class="headerlink" title="PVLAN端口类型"></a>PVLAN端口类型</h3><p>host isolated 隔离端口，此端口类型属于隔离VLAN，技能与混杂端口通信</p>
+<p>host community 联盟端口，此端口类型属于一个联盟VLAN，技能与同联盟VLAN和混杂端口通信</p>
+<p>promiscuous 混杂端口，此端口类型不属于任何辅VLAN，通常连接路由器</p>
+<p>不同端口类型之间的可达情况如下：</p>
+<table>
+<thead>
+<tr>
+<th>端口类型</th>
+<th>隔离端口</th>
+<th>混杂端口</th>
+<th>VLAN10联盟端口</th>
+<th>VLAN20联盟端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>隔离端口</td>
+<td>拒绝</td>
+<td>接受</td>
+<td>拒绝</td>
+<td>拒绝</td>
+</tr>
+<tr>
+<td>混杂端口</td>
+<td>接受</td>
+<td>接受</td>
+<td>接受</td>
+<td>接受</td>
+</tr>
+<tr>
+<td>VLAN10联盟端口</td>
+<td>拒绝</td>
+<td>接受</td>
+<td>接受</td>
+<td>拒绝</td>
+</tr>
+<tr>
+<td>VLAN20联盟端口</td>
+<td>拒绝</td>
+<td>接受</td>
+<td>拒绝</td>
+<td>接受</td>
+</tr>
+</tbody></table>
+<h3 id="PVLANSVI三层映射"><a href="#PVLANSVI三层映射" class="headerlink" title="PVLANSVI三层映射"></a>PVLANSVI三层映射</h3><p>默认辅VLAN无法与其它VLAN通信，除非将其映射到主VLAN的三层SVI口。映射后，辅VLAN技能通过主VLAN的SVI与外界通信。</p>
+<h3 id="PVLAN配置"><a href="#PVLAN配置" class="headerlink" title="PVLAN配置"></a>PVLAN配置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">###PVLAN配置</span><br><span class="line">####定义PVLAN</span><br><span class="line">switch(config)# vlan 10</span><br><span class="line">switch(config-vlan)# private-vlan [primary/isolated/community]</span><br><span class="line"></span><br><span class="line">####辅VLAN关联主VLAN，假设vlan10为主vlan</span><br><span class="line">switch(config)# vlan 10</span><br><span class="line">switch(config-vlan)# private-vlan association 11-19</span><br><span class="line"></span><br><span class="line">####配置端口模式</span><br><span class="line">switch(config)# int e0/0</span><br><span class="line">switch(config-if)# switchport mode private-vlan [host/promiscuous]</span><br><span class="line"></span><br><span class="line">####pvlan host模式下划分VLAN</span><br><span class="line">switch(config-if)# switchport private-vlan host-association 10 19</span><br><span class="line"></span><br><span class="line">####pvlan promiscuous模式下配置下游辅vlan</span><br><span class="line">switch(config-if)# switchport mapping 10 11-19</span><br><span class="line"></span><br><span class="line">####SVI三层映射</span><br><span class="line">switch(config)# int vlan 10</span><br><span class="line">switch(config-if)# private-vlan mapping 11-19</span><br></pre></td></tr></table></figure>
+
+<h2 id><a href="#" class="headerlink" title></a></h2>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://arclogicr.github.io/2022/04/25/switch-basic/" title="交换基础1" target="_blank" rel="external">https://arclogicr.github.io/2022/04/25/switch-basic/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/arclogicr" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/arclogicr" target="_blank"><span class="text-dark">Arclogic</span><small class="ml-1x">网络工程师</small></a></h3>
+        <div>大勇若怯，大智若愚</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2022/12/09/pushgateway/" title="使用pushgateway监控需要上传文件的应用接口"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2022/04/17/ipv6/" title="IPv6地址"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+    <div class="copyright">
+    	
+        &copy; 2023 Arclogic
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-55WVJ2X9MK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-55WVJ2X9MK');
+</script>
+
+
+
+
+</body>
+</html>
